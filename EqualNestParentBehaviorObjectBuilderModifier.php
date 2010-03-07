@@ -107,6 +107,7 @@ if (\$deep) {
     $this->addGetRelatedCollection($script);
     $this->addSetRelatedColelction($script);
     $this->hasObjectInRelatedCollection($script);
+    $this->addObjectToRelatedCollection($script);
     $this->removeObjectFromRelatedCollection($script);
     $this->countObjectsInRelatedCollection($script);
 
@@ -341,7 +342,7 @@ public function remove$pluralRefTableName()
  * @return     PropelObjectCollection {$this->objectClassname}[] List of Equal Nest $pluralRefTableName of this {$this->objectClassname}
  * @throws     PropelException
  */  
-public function get$pluralRefTableName(\$criteria = null, PropelPDO \$con = null)
+public function get$pluralRefTableName(Criteria \$criteria = null, PropelPDO \$con = null)
 {
   if (null === \$this->$varListRelatedPKs) {
     \$this->initList{$refTableName}PKs(\$con);
@@ -380,7 +381,26 @@ public function get$pluralRefTableName(\$criteria = null, PropelPDO \$con = null
     $varRelatedObjectsColl = "collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}";
    
     $script .= "
-    
+/**
+ * Set an array of {$this->objectClassname} objects as $pluralRefTableName of the this object
+ *
+ * @param      {$this->objectClassname}[] \$objects The {$this->objectClassname} objects to set as $pluralRefTableName of the current object
+ * @return     void
+ * @throws     PropelException
+ * @see        add$refTableName()
+ */
+public function set$pluralRefTableName(\$objects)
+{
+  \$this->clear$pluralRefTableName();
+  foreach (\$objects as \$a$refTableName)
+  {
+    if (!\$a$refTableName instanceof {$this->objectClassname}) {
+      throw new PropelException(sprintf('[Equal Nest] Cannot set object of type %s as $refTableName, expected {$this->objectClassname}', is_object(\$a$refTableName) ? get_class(\$a$refTableName) : gettype(\$a$refTableName)));
+    } else {
+      \$this->add$refTableName(\$a$refTableName);
+    }
+  }
+}    
 ";
   }    
   
@@ -398,10 +418,57 @@ public function get$pluralRefTableName(\$criteria = null, PropelPDO \$con = null
     $varRelatedObjectsColl = "collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}";
    
     $script .= "
-    
+/**
+ * Checks for Equal Nest relation
+ * 
+ * @param      {$this->objectClassname} \$a$refTableName The object to check for Equal Nest $refTableName relation to the current object
+ * @return     boolean
+ */
+public function has$refTableName({$this->objectClassname} \$a$refTableName)
+{
+  if (null === \$this->$varRelatedObjectsColl) {
+    \$this->get$pluralRefTableName();
+  }
+  
+  return in_array(\$a$refTableName, \$this->{$varRelatedObjectsColl}->getArrayCopy());
+}    
 ";
   }    
+
+
+  public function addObjectToRelatedCollection(&$script)
+  {
+    $refTableName = $this->middle_table->getPhpName();
+    $pluralRefTableName = $this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName());
+    $peerClassname = $this->builder->getStubPeerBuilder()->getClassname();
+    $refPeerClassname = $this->builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
+   
+    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
+    
+    $varListRelatedPKs = "listEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}PKs";
+    $varRelatedObjectsColl = "collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}";
+   
+    $script .= "
+/**
+ * Method called to associate another {$this->objectClassname} object as a $refTableName of this one
+ * through the Equal Nest $pluralRefTableName relation.
+ *
+ * @param      {$this->objectClassname} \$a$refTableName The {$this->objectClassname} object to set as Equal Nest $pluralRefTableName relation of the current object
+ * @return     void
+ * @throws     PropelException
+ */
+public function add$refTableName({$this->objectClassname} \$a$refTableName) 
+{
+  if (null === \$this->$varRelatedObjectsColl) {
+    \$this->get$pluralRefTableName();
+  }
   
+  if (!\$this->has$refTableName(\$a$refTableName)) {
+    \$this->{$varRelatedObjectsColl}[] = \$a$refTableName;
+  }
+}    
+";
+  }  
 
   public function removeObjectFromRelatedCollection(&$script)
   {
@@ -416,7 +483,25 @@ public function get$pluralRefTableName(\$criteria = null, PropelPDO \$con = null
     $varRelatedObjectsColl = "collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}";
    
     $script .= "
-    
+/**
+ * Method called to remove a {$this->objectClassname} object from the Equal Nest $pluralRefTableName relation
+ *
+ * @param      {$this->objectClassname} \$a$refTableName The {$this->objectClassname} object to remove as a $refTableName of the current object
+ * @return     void
+ * @throws     PropelException
+ */
+public function remove$refTableName({$this->objectClassname} \$a$refTableName) 
+{
+  if (null === \$this->$varRelatedObjectsColl) {
+    \$this->get$pluralRefTableName();
+  }
+
+  if (\$this->{$varRelatedObjectsColl}->contains(\$a$refTableName)) {
+    \$this->{$varRelatedObjectsColl}->remove(\$this->{$varRelatedObjectsColl}->search(\$a$refTableName));
+  } else {
+    throw new PropelException(sprintf('[Equal Nest] Cannot remove $refTableName from Equal Nest relation because it is not set as one!'));
+  }
+}    
 ";
   }    
   
@@ -434,7 +519,37 @@ public function get$pluralRefTableName(\$criteria = null, PropelPDO \$con = null
     $varRelatedObjectsColl = "collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}";
    
     $script .= "
-    
+/**
+ * Returns the number of Equal Nest $pluralRefTableName of this object.
+ *
+ * @param      Criteria $criteria
+ * @param      boolean $distinct
+ * @param      PropelPDO $con
+ * @return     integer Count of $pluralRefTableName
+ * @throws     PropelException
+ */
+public function count$pluralRefTableName(Criteria \$criteria = null, \$distinct = false, PropelPDO \$con = null) 
+{
+  if (null === \$this->$varListRelatedPKs) {
+    \$this->initList{$pluralRefTableName}PKs(\$con);
+  }
+  
+  if (null === \$this->$varRelatedObjectsColl || null !== \$criteria) {
+    if (\$this->isNew() && null === \$this->$varRelatedObjectsColl) {
+      return 0;
+    } else {
+      \$query = {$this->builder->getStubQueryBuilder()->getClassname()}::create(null, \$criteria);
+      if (\$distinct) {
+        \$query->distinct();
+      }
+      return \$query
+        ->addUsingAlias({$pk->getConstantName()}, \$this->$varListRelatedPKs, Criteria::IN)
+        ->count(\$con);
+    }
+  } else {
+    return count(\$this->$varRelatedObjectsColl);
+  }
+}    
 ";
   }    
   
