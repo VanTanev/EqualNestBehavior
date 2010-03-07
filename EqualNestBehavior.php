@@ -13,7 +13,7 @@ class EqualNestBehavior extends Behavior
 {
   // default parameters value
   protected $parameters = array(
-    'parent'     => null,
+    'parent_table'          => null,
     'reference_column_1'    => null,
     'reference_column_2'    => null,
   );              
@@ -68,7 +68,7 @@ class EqualNestBehavior extends Behavior
     {
       $parentBehavior = new EqualNestParentBehavior();
       $parentBehavior->setName('equal_nest_parent');
-      $parentBehavior->addParameter(array('name' => '', 'value' => ''));
+      $parentBehavior->addParameter(array('name' => 'middle_table', 'value' => $this->getTable()->getName()));
       $parentTable->addBehavior($parentBehavior);
     }
     
@@ -164,12 +164,12 @@ public static function checkForExistingEqualNest{$this->getTable()->getPhpName()
   
   protected function getParentTable()
   {
-    if (null === $this->getParameter('parent'))
+    if (null === $this->getParameter('parent_table'))
     {
       throw new Exception('You must set a parent table for the Equal Nest behavior');      
     }
     
-    return $this->getTable()->getDatabase()->getTable($this->getParameter('parent'));
+    return $this->getTable()->getDatabase()->getTable($this->getParameter('parent_table'));
   }    
   
   

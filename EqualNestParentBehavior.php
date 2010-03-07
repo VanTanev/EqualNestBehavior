@@ -14,4 +14,42 @@ require_once dirname(__FILE__) . '/EqualNestParentBehaviorPeerBuilderModifier.ph
 class EqualNestParentBehavior extends Behavior
 {
   
+  protected $objectBuilderModifier, $queryBuilderModifier, $peerBuilderModifier;   
+  
+  protected $parameters = array(
+    'middle_table' => null,
+  );
+  
+  protected function getMiddleTable()
+  {
+    return $this->getTable()->getDatabase()->getTable($this->getParameter('middle_table'));
+  }
+  
+  public function getObjectBuilderModifier()
+  {
+    if (is_null($this->objectBuilderModifier))
+    {
+      $this->objectBuilderModifier = new EqualNestParentBehaviorObjectBuilderModifier($this, $this->getMiddleTable());
+    }
+    return $this->objectBuilderModifier;
+  }
+
+  public function getQueryBuilderModifier()
+  {
+    if (is_null($this->queryBuilderModifier))
+    {
+      $this->queryBuilderModifier = new EqualNestParentBehaviorQueryBuilderModifier($this, $this->getMiddleTable());
+    }
+    return $this->queryBuilderModifier;
+  }
+    
+  public function getPeerBuilderModifier()
+  {
+    if (is_null($this->peerBuilderModifier))
+    {
+      $this->peerBuilderModifier = new EqualNestParentBehaviorPeerBuilderModifier($this, $this->getMiddleTable());
+    }
+    return $this->peerBuilderModifier;
+  }  
+  
 }
