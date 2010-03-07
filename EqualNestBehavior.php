@@ -139,6 +139,9 @@ public static function removeEqualNest{$this->getTable()->getPhpName()}Relation(
   
   public function addPeerCheckForEqualNestRelation(&$script)
   {
+    $fullNameRefColumn1 = $this->getReferenceColumn1()->getFullyQualifiedName();
+    $fullNameRefColumn2 = $this->getReferenceColumn2()->getFullyQualifiedName();
+    
     $script .= "
 /**
  * Checks whether an equal nest relation between {$this->parentBehavior->getTable()->getPhpName()} objects
@@ -150,11 +153,11 @@ public static function removeEqualNest{$this->getTable()->getPhpName()}Relation(
  */    
 public static function checkForExistingEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, PropelPDO \$con = null)
 {
-  return (\$relation = BrotherQuery::create()
-    ->condition('first-one', 'Brother.Child1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
-    ->condition('first-two', 'Brother.Child2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
-    ->condition('second-one', 'Brother.Child1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
-    ->condition('second-two', 'Brother.Child2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
+  return (\$relation = {$this->builder->getStubQueryBuilder()->getClassname()}::create()
+    ->condition('first-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
+    ->condition('first-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
+    ->condition('second-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
+    ->condition('second-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
     ->combine(array('first-one', 'first-two'), 'AND', 'first')
     ->combine(array('second-one', 'second-two'), 'AND', 'second')
     ->where(array('first', 'second'), 'OR')
