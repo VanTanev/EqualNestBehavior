@@ -20,7 +20,7 @@ class EqualNestParentBehavior extends Behavior
     'middle_table' => null,
   );
   
-  protected function getMiddleTable()
+  public function getMiddleTable()
   {
     return $this->getTable()->getDatabase()->getTable($this->getParameter('middle_table'));
   }
