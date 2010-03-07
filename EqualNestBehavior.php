@@ -173,7 +173,7 @@ public static function checkForExistingEqualNest{$this->getTable()->getPhpName()
   }    
   
   
-  protected function getRefecenceColumn1Name()
+  public function getRefecenceColumn1Name()
   {
     if (null === $this->getParameter('reference_column_1'))
     {
@@ -185,7 +185,7 @@ public static function checkForExistingEqualNest{$this->getTable()->getPhpName()
     }
   } 
 
-  protected function getRefecenceColumn2Name()
+  public function getRefecenceColumn2Name()
   {
     if (null === $this->getParameter('reference_column_2'))
     {
@@ -196,6 +196,16 @@ public static function checkForExistingEqualNest{$this->getTable()->getPhpName()
       return $this->getParameter('reference_column_2');
     }
   } 
+  
+  public function getReferenceColumn1()
+  {
+    return $this->table->getColumn($this->getRefecenceColumn1Name());
+  }
+  
+  public function getReferenceColumn2()
+  {
+    return $this->table->getColumn($this->getRefecenceColumn2Name());
+  }
 
   
 }

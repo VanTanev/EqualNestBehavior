@@ -9,11 +9,15 @@ class EqualNestParentBehaviorPeerBuilderModifier
   /** @var Table */
   protected $middle_table;  
   
+  /** @var EqualNestBehavior */
+  protected $middle_behavior;
+  
   public function __construct($behavior, $middle_table)
   {
     $this->behavior = $behavior;
     $this->table = $behavior->getTable();
     $this->middle_table = $middle_table;     
+    $this->middle_behavior = $this->middle_table->getBehavior('equal_nest');
   }
  
   protected function getParameter($key)
@@ -50,36 +54,33 @@ class EqualNestParentBehaviorPeerBuilderModifier
   
   public function staticAttributes($builder)
   {
+    $this->builder = $builder;
     $tableName = $this->table->getName();
-    /** @var Column */
     $pks = $this->table->getPrimaryKey();
-    //$pks->getFullyQualifiedName())
-    //$pks->getStudlyPhpName()
-    throw new Exception($pks[0]->getFullyQualifiedName());
-    //$pks->getFullyQualifiedName()
-    //$pk_name = $pks[0]->getName();
-    
+    $tablePk = $pks[0]->getFullyQualifiedName();
+     
     $middleTableName = $this->middle_table->getName();
-
-    $ucMiddleTableName = strtoupper($middleTableName);
+    $ucMiddleTableName = strtoupper($this->middle_table->getPhpName());
+    $ref_column_1 = $this->middle_behavior->getReferenceColumn1();
+    $ref_column_2 = $this->middle_behavior->getReferenceColumn2();
     
     $script = "
 /**
- *
+ *  Select query to get the IDs that will be used for IN clauses to retrieve the {$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}
  */      
 const LIST_EQUAL_NEST_{$ucMiddleTableName}_QUERY = '
-  SELECT {$pks[0]->getFullyQualifiedName()} FROM child 
-  INNER JOIN brothers ON 
-    child.ID = brothers.CHILD1
+  SELECT $tablePk FROM $tableName 
+  INNER JOIN $middleTableName ON 
+    $tablePk = {$ref_column_1->getFullyQualifiedName()}
     OR 
-    child.ID = brothers.CHILD2
+    $tablePk = {$ref_column_2->getFullyQualifiedName()}
   WHERE 
-    child.ID IN (
-      SELECT brothers.CHILD1 FROM brothers WHERE brothers.child2 = :child_id
+    $tablePk IN (
+      SELECT {$ref_column_1->getFullyQualifiedName()} FROM $middleTableName WHERE {$ref_column_2->getFullyQualifiedName()} = :{$pks[0]->getStudlyPhpName()}
     )
     OR 
-    child.id IN (
-      SELECT brothers.child2 FROM brothers WHERE brothers.child1 = :child_id
+    $tablePk IN (
+      SELECT {$ref_column_2->getFullyQualifiedName()} FROM $middleTableName WHERE {$ref_column_1->getFullyQualifiedName()} = :{$pks[0]->getStudlyPhpName()}
     )
 ';
 
