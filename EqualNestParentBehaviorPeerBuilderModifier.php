@@ -68,7 +68,7 @@ class EqualNestParentBehaviorPeerBuilderModifier
 /**
  *  Select query to get the IDs that will be used for IN clauses to retrieve the {$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}
  */      
-const LIST_EQUAL_NEST_{$ucMiddleTableName}_QUERY = '
+const LIST_EQUAL_NEST_{$ucMiddleTableName}_PKs_QUERY = '
   SELECT $tablePk FROM $tableName 
   INNER JOIN $middleTableName ON 
     $tablePk = {$ref_column_1->getFullyQualifiedName()}
