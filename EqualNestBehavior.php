@@ -40,6 +40,7 @@ class EqualNestBehavior extends Behavior
       ));
 
       $fk = new ForeignKey();
+      $fk->setName($this->getRefecenceColumn1Name());
       $fk->setForeignTableName($this->getParentTable()->getName());
       $fk->setOnDelete(ForeignKey::CASCADE);
       $fk->setOnUpdate(null);
@@ -56,6 +57,7 @@ class EqualNestBehavior extends Behavior
         'type' => 'INTEGER',
       ));
       $fk = new ForeignKey();
+      $fk->setName($this->getRefecenceColumn2Name());
       $fk->setForeignTableName($this->getParentTable()->getName());
       $fk->setOnDelete(ForeignKey::CASCADE);
       $fk->setOnUpdate(null);
@@ -99,7 +101,7 @@ class EqualNestBehavior extends Behavior
  */    
 public static function buildEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, PropelPDO \$con = null)
 {
-  if (self::checkForExistingEqualNestRelation(\$object1, \$object2, \$con = null))
+  if (self::checkForExistingEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, \$con = null))
   {
     throw new PropelException('[Equal Nest] The relation between those two objects aready exists');
   }      
@@ -148,7 +150,7 @@ public static function removeEqualNest{$this->getTable()->getPhpName()}Relation(
  */    
 public static function checkForExistingEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, PropelPDO \$con = null)
 {
-  return \$relation = BrotherQuery::create()
+  return (\$relation = BrotherQuery::create()
     ->condition('first-one', 'Brother.Child1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
     ->condition('first-two', 'Brother.Child2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
     ->condition('second-one', 'Brother.Child1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
@@ -156,7 +158,7 @@ public static function checkForExistingEqualNest{$this->getTable()->getPhpName()
     ->combine(array('first-one', 'first-two'), 'AND', 'first')
     ->combine(array('second-one', 'second-two'), 'AND', 'second')
     ->where(array('first', 'second'), 'OR')
-  ->findOne(\$con) ? \$relation : false;
+  ->findOne(\$con)) ? \$relation : false;
 }
 ";
   }

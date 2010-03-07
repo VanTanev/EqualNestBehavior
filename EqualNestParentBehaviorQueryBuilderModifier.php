@@ -38,6 +38,8 @@ class EqualNestParentBehaviorQueryBuilderModifier
     $script = '';
     
     $this->addFindRelatedObjects($script);
+    $this->addCountRelatedObjects($script);
+    
     
     
     return $script;
@@ -58,12 +60,36 @@ class EqualNestParentBehaviorQueryBuilderModifier
 public function find{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}Of({$this->objectClassname} $objectName, \$con = null)
 {
   \$obj = clone $objectName;
-  \$obj->clearList{$this->middle_table->getPhpName()}IDs();
+  \$obj->clearList{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}PKs();
   \$obj->clear{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}();
   
   return \$obj->get{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}(\$this, \$con);
 }    
 ";
   }
+
+  public function addCountRelatedObjects(&$script)
+  {
+    $objectName = '$' . $this->table->getStudlyPhpName();
+    
+    $script .= "
+/**
+ * Count equal nest {$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())} of the supplied {$this->objectClassname} object
+ * 
+ * @param      {$this->objectClassname} $objectName
+ * @param      PropelPDO \$con
+ * @return     integer
+ */
+public function count{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}Of({$this->objectClassname} $objectName, \$con = null)
+{
+  \$obj = clone $objectName;
+  \$obj->clearList{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}PKs();
+  \$obj->clear{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}();
+  
+  return \$obj->count{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}(\$this, \$con);
+}    
+";
+  }
+
   
 }

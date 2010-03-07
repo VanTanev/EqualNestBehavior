@@ -141,7 +141,7 @@ public function processEqualNestQueries(PropelPDO \$con = null)
       {
         if (!in_array(\$pk, \$this->listEqualNest{$pluralRefTableName}PKs)) {
           // save new equal nest relation
-          $refPeerClassname::build{$refTableName}Relation(\$this, \$pk, \$con);
+          $refPeerClassname::buildEqualNest{$refTableName}Relation(\$this, \$pk, \$con);
         } else {
           // remove the pk from the list of db keys
           unset(\$this->listEqualNest{$pluralRefTableName}PKs[\$pk]);
@@ -151,7 +151,7 @@ public function processEqualNestQueries(PropelPDO \$con = null)
       // if we have keys still left, this means they are relations that have to be removed
       foreach (\$this->listEqualNest{$pluralRefTableName}PKs as \$old_pk)
       {
-        $refPeerClassname::remove{$refTableName}Relation(\$this, \$old_pk, \$con);
+        $refPeerClassname::removeEqualNest{$refTableName}Relation(\$this, \$old_pk, \$con);
       }
 
       \$con->commit();
@@ -345,7 +345,7 @@ public function remove$pluralRefTableName()
 public function get$pluralRefTableName(Criteria \$criteria = null, PropelPDO \$con = null)
 {
   if (null === \$this->$varListRelatedPKs) {
-    \$this->initList{$refTableName}PKs(\$con);
+    \$this->initList{$pluralRefTableName}PKs(\$con);
   }
   
   if (null === \$this->$varRelatedObjectsColl || null !== \$criteria) {
