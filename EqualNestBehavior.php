@@ -157,18 +157,45 @@ public static function checkForExistingEqualNest{$this->getTable()->getPhpName()
   if (\$object2 instanceof {$this->parentBehavior->getTable()->getPhpName()} && \$object2->isNew()) return false;
 
   return (\$relation = {$this->builder->getStubQueryBuilder()->getClassname()}::create()
-    ->condition('first-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
-    ->condition('first-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
-    ->condition('second-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
-    ->condition('second-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
-    ->combine(array('first-one', 'first-two'), 'AND', 'first')
-    ->combine(array('second-one', 'second-two'), 'AND', 'second')
-    ->where(array('first', 'second'), 'OR')
-  ->findOne(\$con)) ? \$relation : false;
+    ->filterBy{$this->builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName())}(\$object1, \$object2)
+    ->findOne(\$con)) ? \$relation : false;
 }
 ";
   }
   
+  
+  public function queryMethods($builder)
+  {
+    $this->builder = $builder;
+    $fullNameRefColumn1 = $this->table->getPhpName(). '.' .$this->getReferenceColumn1()->getPhpName();
+    $fullNameRefColumn2 = $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName();    
+    
+    $script = '';  
+    
+    // filter by relation
+    $script .= "
+/**
+ * Filter the query by 2 {$this->parentBehavior->getTable()->getPhpName()} objects for a Equal Nest {$this->getTable()->getPhpName()} relation
+ * 
+ * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object1
+ * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object2
+ * @return     {$this->builder->getStubQueryBuilder()->getClassname()}
+ */
+public function filterBy{$this->builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName())}(\$object1, \$object2)
+{
+  return \$this
+    ->condition('first-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
+    ->condition('first-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
+    ->condition('second-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
+    ->condition('second-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
+    ->combine(array('first-one',  'first-two'),  'AND', 'first')
+    ->combine(array('second-one', 'second-two'), 'AND', 'second')
+    ->where(array('first', 'second'), 'OR');
+}    
+";
+  
+    return $script;
+  }
   
   protected function getParentTable()
   {
