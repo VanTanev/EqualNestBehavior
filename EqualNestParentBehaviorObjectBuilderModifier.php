@@ -60,8 +60,13 @@ protected \$listEqualNest{$this->builder->getPluralizer()->getPluralForm($this->
 
 /** 
  * @var        array {$objectClassname}[] Collection to store Equal Nest {$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())} of this $objectClassname
- */
+ */            
 protected \$collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())};
+
+/**
+ * @var        boolean Flag to prevent endless processing loop which occurs when 2 new objects are set as twins
+ */
+protected \$alreadyInEqualNestProcessing = false;
 ";
   }
   
@@ -130,9 +135,13 @@ if (\$deep) {
  */
 public function processEqualNestQueries(PropelPDO \$con = null)
 {
-  if (null !== \$this->collEqualNest$pluralRefTableName) {
+  if (false == \$this->alreadyInEqualNestProcessing && null !== \$this->collEqualNest$pluralRefTableName) {
+    \$this->alreadyInEqualNestProcessing = true;
+
     \$this->clearList{$pluralRefTableName}PKs();
     \$this->initList{$pluralRefTableName}PKs(\$con);
+
+    \$this->collEqualNest{$pluralRefTableName}->save();
   
     \$con->beginTransaction();
     try {
@@ -144,7 +153,7 @@ public function processEqualNestQueries(PropelPDO \$con = null)
           $refPeerClassname::buildEqualNest{$refTableName}Relation(\$this, \$pk, \$con);
         } else {
           // remove the pk from the list of db keys
-          unset(\$this->listEqualNest{$pluralRefTableName}PKs[\$pk]);
+          unset(\$this->listEqualNest{$pluralRefTableName}PKs[array_search(\$pk, \$this->listEqualNest{$pluralRefTableName}PKs)]);
         }
       }
       
@@ -155,6 +164,7 @@ public function processEqualNestQueries(PropelPDO \$con = null)
       }
 
       \$con->commit();
+      \$this->alreadyInEqualNestProcessing = false;
     } catch (PropelException \$e) {
       \$con->rollBack();
       throw \$e;
@@ -223,7 +233,7 @@ protected function initList{$pluralRefTableName}PKs(PropelPDO \$con = null)
     if (\$this->isNew()) {
       \$this->$varListRelatedPKs = array();
     } else {
-      \$stmt = \$con->prepare(ChildPeer::LIST_EQUAL_NEST_{$ucMiddleTableName}_PKs_QUERY);
+      \$stmt = \$con->prepare($peerClassname::LIST_EQUAL_NEST_{$ucMiddleTableName}_PKs_QUERY);
       \$stmt->bindValue(':{$pk->getStudlyPhpName()}', \$this->getPrimaryKey(), PDO::PARAM_INT);
       \$stmt->execute();
       
@@ -330,7 +340,7 @@ public function remove$pluralRefTableName()
 
     $script .= "
 /**
- * Gets an array of Child objects which are Equal Nest $pluralRefTableName of this object.
+ * Gets an array of {$this->objectClassname} objects which are Equal Nest $pluralRefTableName of this object.
  *
  * If the \$criteria is not null, it is used to always fetch the results from the database.
  * Otherwise the results are fetched from the database the first time, then cached.
@@ -426,11 +436,12 @@ public function set$pluralRefTableName(\$objects)
  */
 public function has$refTableName({$this->objectClassname} \$a$refTableName)
 {
-  if (null === \$this->$varRelatedObjectsColl) {
-    \$this->get$pluralRefTableName();
-  }
+  \$coll = \$this->get$pluralRefTableName();  
   
-  return in_array(\$a$refTableName, \$this->{$varRelatedObjectsColl}->getArrayCopy());
+  return \$a{$refTableName}->isNew() || \$this->isNew() ? 
+    in_array(\$a$refTableName, \$coll->getArrayCopy())
+    :
+    in_array(\$a{$refTableName}->getPrimaryKey(), \$coll->getPrimaryKeys());
 }    
 ";
   }    
@@ -459,10 +470,6 @@ public function has$refTableName({$this->objectClassname} \$a$refTableName)
  */
 public function add$refTableName({$this->objectClassname} \$a$refTableName) 
 {
-  if (null === \$this->$varRelatedObjectsColl) {
-    \$this->get$pluralRefTableName();
-  }
-  
   if (!\$this->has$refTableName(\$a$refTableName)) {
     \$this->{$varRelatedObjectsColl}[] = \$a$refTableName;
   }
