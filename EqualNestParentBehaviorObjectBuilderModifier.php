@@ -59,7 +59,7 @@ protected \$listEqualNest{$this->builder->getPluralizer()->getPluralForm($this->
 
 
 /** 
- * @var        array {$objectClassname}[] Collection to store Equal Nest {$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())} of this $objectClassname
+ * @var        PropelObjectCollection09 {$objectClassname}[] Collection to store Equal Nest {$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())} of this $objectClassname
  */            
 protected \$collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())};
 
@@ -112,6 +112,7 @@ if (\$deep) {
     $this->addGetRelatedCollection($script);
     $this->addSetRelatedColelction($script);
     $this->hasObjectInRelatedCollection($script);
+    $this->setObjectsOfRelatedCollection($script);
     $this->addObjectToRelatedCollection($script);
     $this->removeObjectFromRelatedCollection($script);
     $this->countObjectsInRelatedCollection($script);
@@ -447,7 +448,7 @@ public function has$refTableName({$this->objectClassname} \$a$refTableName)
   }    
 
 
-  public function addObjectToRelatedCollection(&$script)
+  public function setObjectsOfRelatedCollection(&$script)
   {
     $refTableName = $this->middle_table->getPhpName();
     $pluralRefTableName = $this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName());
@@ -476,6 +477,38 @@ public function add$refTableName({$this->objectClassname} \$a$refTableName)
 }    
 ";
   }  
+  
+  
+  public function addObjectToRelatedCollection(&$script)
+  {
+    $refTableName = $this->middle_table->getPhpName();
+    $pluralRefTableName = $this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName());
+    $peerClassname = $this->builder->getStubPeerBuilder()->getClassname();
+    $refPeerClassname = $this->builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
+   
+    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
+    
+    $varListRelatedPKs = "listEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}PKs";
+    $varRelatedObjectsColl = "collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}";
+   
+    $script .= "
+/**
+ * Method called to associate multiple {$this->objectClassname} objects as Equal Nest $pluralRefTableName of this one
+ *
+ * @param      {$this->objectClassname}[] $pluralRefTableName The {$this->objectClassname} objects to set as Equal Nest $pluralRefTableName relation of the current object
+ * @return     void
+ * @throws     PropelException
+ */
+public function add$pluralRefTableName(\$$pluralRefTableName) 
+{
+  foreach (\$$pluralRefTableName as \$a$pluralRefTableName)
+  {
+    \$this->add$refTableName(\$a$pluralRefTableName);
+  }
+}    
+";
+  }  
+  
 
   public function removeObjectFromRelatedCollection(&$script)
   {
