@@ -74,7 +74,23 @@ protected \$alreadyInEqualNestProcessing = false;
   {
     return "\$this->processEqualNestQueries(\$con);";
   }
-    
+  
+  
+  /**
+  * I initially thought this code has to be executed to remove any and all slibling relations,
+  * but then I remembered that Propel does that automatically. Calling delete on an object deletes all
+  * relations, and from propel's standpoint the Equal Nest relation is a simple 1:M.
+  * 
+  * Long live Propel! :)
+  * 
+  */
+  public function preSave($builder)
+  {
+    $script =  "
+\$this->listEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}PKs = array();
+\$this->processEqualNestQueries(\$con);
+    ";
+  }
   
   public function objectClearReferences($builder)
   {
