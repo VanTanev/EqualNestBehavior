@@ -376,7 +376,7 @@ public function get$pluralRefTableName(Criteria \$criteria = null, PropelPDO \$c
   }
   
   if (null === \$this->$varRelatedObjectsColl || null !== \$criteria) {
-    if (\$this->isNew() && null === \$this->$varRelatedObjectsColl) {
+    if (array() === \$this->$varListRelatedPKs && null === \$this->$varRelatedObjectsColl) {
       // return empty collection
       \$this->init$pluralRefTableName();
     } else {
