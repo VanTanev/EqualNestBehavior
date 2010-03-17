@@ -186,8 +186,8 @@ public function filterBy{$this->builder->getPluralizer()->getPluralForm($this->p
   return \$this
     ->condition('first-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
     ->condition('first-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
-    ->condition('second-one', '$fullNameRefColumn1 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
-    ->condition('second-two', '$fullNameRefColumn2 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
+    ->condition('second-one', '$fullNameRefColumn2 = ?', is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1)
+    ->condition('second-two', '$fullNameRefColumn1 = ?', is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2)
     ->combine(array('first-one',  'first-two'),  'AND', 'first')
     ->combine(array('second-one', 'second-two'), 'AND', 'second')
     ->where(array('first', 'second'), 'OR');
