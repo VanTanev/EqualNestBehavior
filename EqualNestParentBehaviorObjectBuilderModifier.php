@@ -83,6 +83,8 @@ protected \$alreadyInEqualNestProcessing = false;
   * 
   * Long live Propel! :)
   * 
+  * 
+  * 
   */
   public function preSave($builder)
   {
@@ -90,7 +92,10 @@ protected \$alreadyInEqualNestProcessing = false;
 \$this->listEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}PKs = array();
 \$this->processEqualNestQueries(\$con);
     ";
+    
+    // output nothing. this is left here for historical reasons
   }
+  
   
   public function objectClearReferences($builder)
   {
@@ -109,7 +114,6 @@ if (\$deep) {
 \$this->collEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())} = null;
 ";
   }  
-  
   
   
   public function objectMethods($builder)
@@ -136,6 +140,7 @@ if (\$deep) {
     return $script;
   }  
   
+
   public function addPorcessEqualNestQueries(&$script)
   {
     $refTableName = $this->middle_table->getPhpName();
@@ -153,6 +158,11 @@ if (\$deep) {
 public function processEqualNestQueries(PropelPDO \$con = null)
 {
   if (false == \$this->alreadyInEqualNestProcessing && null !== \$this->collEqualNest$pluralRefTableName) {
+
+    if (\$con === null) {
+      \$con = Propel::getConnection({$peerClassname}::DATABASE_NAME, Propel::CONNECTION_WRITE);
+    }  
+  
     \$this->alreadyInEqualNestProcessing = true;
 
     \$this->clearList{$pluralRefTableName}PKs();
@@ -163,11 +173,13 @@ public function processEqualNestQueries(PropelPDO \$con = null)
     \$con->beginTransaction();
     try {
 
-      foreach (\$this->get$pluralRefTableName()->getPrimaryKeys() as \$pk)
+      foreach (\$this->get$pluralRefTableName()->getPrimaryKeys(\$usePrefix = false) as \$col_key => \$pk)
       {
         if (!in_array(\$pk, \$this->listEqualNest{$pluralRefTableName}PKs)) {
           // save new equal nest relation
           $refPeerClassname::buildEqualNest{$refTableName}Relation(\$this, \$pk, \$con);
+          // add this object to the slibling's collection
+          \$this->get$pluralRefTableName()->get(\$col_key)->add{$refTableName}(\$this);  
         } else {
           // remove the pk from the list of db keys
           unset(\$this->listEqualNest{$pluralRefTableName}PKs[array_search(\$pk, \$this->listEqualNest{$pluralRefTableName}PKs)]);
@@ -453,12 +465,15 @@ public function set$pluralRefTableName(\$objects)
  */
 public function has$refTableName({$this->objectClassname} \$a$refTableName)
 {
-  \$coll = \$this->get$pluralRefTableName();  
+  if (null === \$this->$varRelatedObjectsColl)
+  {
+    \$this->get$pluralRefTableName();  
+  }
   
   return \$a{$refTableName}->isNew() || \$this->isNew() ? 
-    in_array(\$a$refTableName, \$coll->getArrayCopy())
+    in_array(\$a$refTableName, \$this->{$varRelatedObjectsColl}->getArrayCopy())
     :
-    in_array(\$a{$refTableName}->getPrimaryKey(), \$coll->getPrimaryKeys());
+    in_array(\$a{$refTableName}->getPrimaryKey(), \$this->{$varRelatedObjectsColl}->getPrimaryKeys());
 }    
 ";
   }    
