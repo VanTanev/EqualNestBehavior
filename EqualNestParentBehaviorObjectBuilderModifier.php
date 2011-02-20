@@ -74,28 +74,7 @@ protected \$alreadyInEqualNestProcessing = false;
   {
     return "\$this->processEqualNestQueries(\$con);";
   }
-  
-  
-  /**
-  * I initially thought this code has to be executed to remove any and all slibling relations,
-  * but then I remembered that Propel does that automatically. Calling delete on an object deletes all
-  * relations, and from propel's standpoint the Equal Nest relation is a simple 1:M.
-  * 
-  * Long live Propel! :)
-  * 
-  * 
-  * 
-  */
-  public function preSave($builder)
-  {
-    $script =  "
-\$this->listEqualNest{$this->builder->getPluralizer()->getPluralForm($this->middle_table->getPhpName())}PKs = array();
-\$this->processEqualNestQueries(\$con);
-    ";
-    
-    // output nothing. this is left here for historical reasons
-  }
-  
+
   
   public function objectClearReferences($builder)
   {
@@ -470,10 +449,9 @@ public function has$refTableName({$this->objectClassname} \$a$refTableName)
     \$this->get$pluralRefTableName();  
   }
   
-  return \$a{$refTableName}->isNew() || \$this->isNew() ? 
-    in_array(\$a$refTableName, \$this->{$varRelatedObjectsColl}->getArrayCopy())
-    :
-    in_array(\$a{$refTableName}->getPrimaryKey(), \$this->{$varRelatedObjectsColl}->getPrimaryKeys());
+  return \$a{$refTableName}->isNew() || \$this->isNew()
+    ? in_array(\$a$refTableName, \$this->{$varRelatedObjectsColl}->getArrayCopy())
+    : in_array(\$a{$refTableName}->getPrimaryKey(), \$this->{$varRelatedObjectsColl}->getPrimaryKeys());
 }    
 ";
   }    
