@@ -157,7 +157,7 @@ public function processEqualNestQueries(PropelPDO \$con = null)
         if (!in_array(\$pk, \$this->listEqualNest{$pluralRefTableName}PKs)) {
           // save new equal nest relation
           $refPeerClassname::buildEqualNest{$refTableName}Relation(\$this, \$pk, \$con);
-          // add this object to the slibling's collection
+          // add this object to the sibling's collection
           \$this->get$pluralRefTableName()->get(\$col_key)->add{$refTableName}(\$this);  
         } else {
           // remove the pk from the list of db keys
