@@ -3,11 +3,19 @@
 require_once dirname(__FILE__) . '/EqualNestParentBehavior.php';
 
 /**
+ * This file is part of the Equal Nest Behavior package.
+ * For the full copyright and license information, please view the README.md
+ * file that was distributed with this source code.
+ *
+ * @license    MIT License
+ */
+
+/**
  * Gives a model class the ability to support Equal Nest relations
  *
  *
  * @author      Ivan Plamenov Tanev aka Crafty_Shadow @ WEBWORLD.BG <vankata.t@gmail.com>
- * ?package     propel.generator.behavior.equal_nest
+ * @package     propel.generator.behavior.equal_nest
  */
 class EqualNestBehavior extends Behavior
 {

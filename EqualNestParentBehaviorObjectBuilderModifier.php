@@ -1,4 +1,17 @@
 <?php
+
+/**
+ * This file is part of the Equal Nest Behavior package.
+ * For the full copyright and license information, please view the README.md
+ * file that was distributed with this source code.
+ *
+ * @license    MIT License
+ */
+
+/**
+ * @author      Ivan Plamenov Tanev aka Crafty_Shadow @ WEBWORLD.BG <vankata.t@gmail.com>
+ * @package     propel.generator.behavior.equal_nest
+ */
 class EqualNestParentBehaviorObjectBuilderModifier
 {
   protected $behavior, $table, $builder, $objectClassname, $peerClassname;
@@ -271,7 +284,7 @@ protected function initList{$pluralRefTableName}PKs(PropelPDO \$con = null)
  * @return     void
  * @see        add$refTableName()
  * @see        set$pluralRefTableName()
- * @see        removeAll$pluralRefTableName()
+ * @see        remove$pluralRefTableName()
  */
 public function clear$pluralRefTableName()
 {
