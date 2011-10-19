@@ -53,6 +53,7 @@ propel:
 ## Usage
 
 Continuing with the example above, here is how you would use the Person object to define Friend relationships:
+
 ```php
 <?php
 $john = new Person();
@@ -68,17 +69,20 @@ $john->getFriends();
 
 $john->addFriends(array($peter, $marry)); // same as the above
 
-$john->save(); // Friend relations are not commited to the database until one of the objects is saved (then all realted objects are saved)
+$john->save(); // Friend relations are not committed to the database until one of the objects is saved (then all related objects are saved)
 
 $john->hasFriend($peter); // true
 $peter->hasFriend($john); // true
 
-$john->clearFriends();
-$john->getFriend(); // empty array
+$john->removeFriends();
+$john->getFriends(); // empty array
 $john->save(); // commit to the DB
 ```
 
+The most important thing to remember is that **all changes are committed to the database only after you call the `->save()` method!**
+
 ### Keep in mind that relations are non-transitional:
+
 ```php
 <?php
 $john->addFriend($marry);
@@ -88,7 +92,8 @@ $john->hasFriend($peter); // false
 
 If you need this you will have to manually implement it.
 
-## Full behavior settings:
+## Full behavior settings (You do not need to use this, but it's good to know):
+
 ```xml
 <table name="person">
   <column name="id" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" />
@@ -112,4 +117,22 @@ If you need this you will have to manually implement it.
     <reference local="friend_2" foreign="id" />
   </foreign-key>
 </table>
+```
+
+
+## Full API:
+
+```php
+<?php
+$person->addFriend($friend);
+$person->hasFriend($friend);
+$person->getFriends($criteria = null, $con = null); // get all friends, will be cached if no citeria specified. Filtered by the criteria otherwize
+$person->setFriends($friends_array); // replace the current collection of friends
+$person->addFriends($friends_array); // append to the current collection of friends
+$person->removeFriend($friend) // remove a specfic friend
+$person->removeFriends(); // remove all friends
+$person->countFriends();
+
+PersonQuery::create()->findFriendsOf($person);
+PersonQuery::create()->countFriendsOf($person);
 ```
