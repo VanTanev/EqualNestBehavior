@@ -29,7 +29,7 @@ Then in your schema.xml:
 
 ## Setup with symfony 1.4
 
-Copy the behavior to /vendor/equal_nest_behavior and then register the behavior class by adding the following to the bottom of the `config/propel.ini` file:
+Copy the behavior to `lib/vendor/equal_nest_behavior` and then register the behavior class by adding the following to the bottom of the `config/propel.ini` file:
 
 ```ini
 propel.behavior.equal_nest.class = lib.vendor.equal_nest_behavior.EqualNestBehavior
