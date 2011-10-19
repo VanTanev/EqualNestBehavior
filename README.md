@@ -1,6 +1,6 @@
 # Equal Nest Behavior
 
-The Equal Nest Behavior is inspired by [Doctrine's Equal Nest Relations](http://www.doctrine-project.org/documentation/manual/1_0/en/defining-models:relationships:join-table-associations:self-referencing-nest-relations:equal-nest-relations) implementation and provides a way to define relations between objects that have equal hierarchy - think about a Person object and Friends relation.
+The Equal Nest Behavior is inspired by [Doctrine's Equal Nest Relations](http://www.doctrine-project.org/documentation/manual/1_0/en/defining-models:relationships:join-table-associations:self-referencing-nest-relations:equal-nest-relations) implementation and provides a way to define relations between objects that have equal hierarchy - think about a person and his friends.
 
 ## Setup with vanilla Propel
 
@@ -61,15 +61,11 @@ $peter = new Person();
 $marry = new Person();
 
 $john->addFriend($peter);
-
 $john->addFriend($marry);
 
-$john->getFriends();
-// returns a PropelObjectCollection ($peter, $marry)
+$john->getFriends(); // returns a PropelObjectCollection ($peter, $marry)
 
 $john->addFriends(array($peter, $marry)); // same as the above
-
-$john->save(); // Friend relations are not committed to the database until one of the objects is saved (then all related objects are saved)
 
 $john->hasFriend($peter); // true
 $peter->hasFriend($john); // true
@@ -125,14 +121,23 @@ If you need this you will have to manually implement it.
 ```php
 <?php
 $person->addFriend($friend);
-$person->hasFriend($friend);
-$person->getFriends($criteria = null, $con = null); // get all friends, will be cached if no citeria specified. Filtered by the criteria otherwize
-$person->setFriends($friends_array); // replace the current collection of friends
-$person->addFriends($friends_array); // append to the current collection of friends
-$person->removeFriend($friend) // remove a specfic friend
-$person->removeFriends(); // remove all friends
-$person->countFriends();
 
-PersonQuery::create()->findFriendsOf($person);
-PersonQuery::create()->countFriendsOf($person);
+$person->hasFriend($friend);
+
+$person->getFriends($criteria = null, $con = null); // get all friends, will be cached if no citeria specified. Filtered by the criteria otherwize
+
+$person->setFriends($friends_array); // replace the current collection of friends
+
+$person->addFriends($friends_array); // append to the current collection of friends
+
+$person->removeFriend($friend) // remove a specfic friend
+
+$person->removeFriends(); // remove all friends
+
+$person->countFriends($criteria = null, $distinct = false, $con = null);
+
+
+PersonQuery::create()->findFriendsOf($person, $con = null);
+
+PersonQuery::create()->countFriendsOf($person, $con = null);
 ```
