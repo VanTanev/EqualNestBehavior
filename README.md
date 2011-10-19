@@ -7,7 +7,10 @@ The Equal Nest Behavior is inspired by [Doctrine's Equal Nest Relations](http://
 Copy the behavior to `generator/lib/behavior/equal_nest` and then register the behavior class by adding the following to the bottom of the `build.properties` file in you project folder:
 
 ```ini
-# add custom behavior
+# check that you have behaviors enabled
+propel.builder.addBehaviors = true
+
+# and add the custom behavior
 propel.behavior.equal_nest.class = behavior.equal_nest.EqualNestBehavior
 ```
 
@@ -32,6 +35,10 @@ Then in your schema.xml:
 Copy the behavior to `lib/vendor/equal_nest_behavior` and then register the behavior class by adding the following to the bottom of the `config/propel.ini` file:
 
 ```ini
+; check that you have behaviors enabled
+propel.builder.addBehaviors = true
+
+; and add the custom behavior
 propel.behavior.equal_nest.class = lib.vendor.equal_nest_behavior.EqualNestBehavior
 ```
 
@@ -63,10 +70,9 @@ $marry = new Person();
 
 $john->addFriend($peter);
 $john->addFriend($marry);
+$john->addFriends(array($peter, $marry)); // same as the above
 
 $john->getFriends(); // returns a PropelObjectCollection ($peter, $marry)
-
-$john->addFriends(array($peter, $marry)); // same as the above
 
 $john->hasFriend($peter); // true
 $peter->hasFriend($john); // true
