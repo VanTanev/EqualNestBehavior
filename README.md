@@ -160,6 +160,16 @@ PersonQuery::create()->countFriendsOf($person, $con = null);
 ```
 
 
+## Propel pluralizer
+
+This behavior makes use of the Propel pluralizer when generating the relational interface. Make sure to always use the `StandardEnglishPluralizer` [bundled with Propel 1.6](http://propel.posterous.com/propel-gets-better-at-naming-things) and up whenever possible (eg when you are starting a new project).
+
+To use the pluralizer add the following to your `build.properties` (for standalone Propel) or `propel.ini` (for Symfony + Propel):
+```ini
+propel.builder.pluralizer.class = builder.util.StandardEnglishPluralizer
+```
+
+
 ## License
 
 Equal Nest Behavior for Propel is released under the MIT Licence.
