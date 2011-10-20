@@ -49,7 +49,7 @@ class EqualNestBehavior extends Behavior
 
       $fk = new ForeignKey();
       $fk->setName($this->getRefecenceColumn1Name());
-      $fk->setForeignTableName($this->getParentTable()->getName());
+      $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
       $fk->setOnDelete(ForeignKey::CASCADE);
       $fk->setOnUpdate(null);
       $fk->addReference($this->getRefecenceColumn1Name(), $parentTablePrimaryKey[0]->getName());
@@ -66,7 +66,7 @@ class EqualNestBehavior extends Behavior
       ));
       $fk = new ForeignKey();
       $fk->setName($this->getRefecenceColumn2Name());
-      $fk->setForeignTableName($this->getParentTable()->getName());
+      $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
       $fk->setOnDelete(ForeignKey::CASCADE);
       $fk->setOnUpdate(null);
       $fk->addReference($this->getRefecenceColumn2Name(), $parentTablePrimaryKey[0]->getName());
@@ -220,7 +220,7 @@ public function filterBy{$this->builder->getPluralizer()->getPluralForm($this->p
   {
     if (null === $this->getParameter('reference_column_1'))
     {
-      return strtolower($this->getParentTable()->getPhpName()) . '1';
+      return strtolower($this->getParentTable()->getPhpName()) . '_1';
     }
     else
     {
@@ -232,7 +232,7 @@ public function filterBy{$this->builder->getPluralizer()->getPluralForm($this->p
   {
     if (null === $this->getParameter('reference_column_2'))
     {
-      return strtolower($this->getParentTable()->getPhpName()) . '2';
+      return strtolower($this->getParentTable()->getPhpName()) . '_2';
     }
     else
     {

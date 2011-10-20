@@ -2,6 +2,10 @@
 
 The Equal Nest Behavior is inspired by [Doctrine's Equal Nest Relations](http://www.doctrine-project.org/documentation/manual/1_0/en/defining-models:relationships:join-table-associations:self-referencing-nest-relations:equal-nest-relations) implementation and provides a way to define relations between objects that have equal hierarchy - think about a person and his friends.
 
+### Requirements
+This behavior requires Propel >=1.6.0
+
+
 ## Setup with vanilla Propel
 
 Copy the behavior to `generator/lib/behavior/equal_nest` and then register the behavior class by adding the following to the bottom of the `build.properties` file in you project folder:
@@ -30,6 +34,7 @@ Then in your schema.xml:
 </table>
 ```
 
+
 ## Setup with symfony 1.4
 
 Copy the behavior to `lib/vendor/equal_nest_behavior` and then register the behavior class by adding the following to the bottom of the `config/propel.ini` file:
@@ -53,10 +58,12 @@ propel:
 
   friend:
     _propel_behaviors:
+      symfony: { form: false, filter: false }
       equal_nest:
         parent_table: person
     # you do not need to specify any columns for the "friend" table, the behavior will add them automatically
 ```
+
 
 ## Usage
 
@@ -84,6 +91,7 @@ $john->save(); // commit to the DB
 
 The most important thing to remember is that **all changes are committed to the database only after you call the `->save()` method!**
 
+
 ### Keep in mind that relations are non-transitional:
 
 ```php
@@ -94,6 +102,7 @@ $john->hasFriend($peter); // false
 ```
 
 If you need this you will have to manually implement it.
+
 
 ## Full behavior settings (You do not need to use this, but it's good to know):
 
