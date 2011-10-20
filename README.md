@@ -119,8 +119,8 @@ If you need this you will have to manually implement it.
     <parameter name="reference_column_1" value="friend_2" />
   </behavior>
 
-  <colum name="friend_1" required="true" primaryKey="true" />
-  <colum name="friend_2" required="true" primaryKey="true" />
+  <colum name="friend_1" required="true" primaryKey="true" type="INTEGER" />
+  <colum name="friend_2" required="true" primaryKey="true" type="INTEGER" />
 
   <foreign-key foreignTable="person" onDelete="cascade">
     <reference local="friend_1" foreign="id" />
