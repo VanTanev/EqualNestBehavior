@@ -149,32 +149,14 @@ protected function initList{$pluralRefTableName}PKs(PropelPDO \$con = null)
 ";
   }
 
-  public function addClearRelatedCollection($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Clears out the collection of Equal Nest $pluralRefTableName
- *
- * This does not modify the database; however, it will remove any associated objects, causing
- * them to be refetched by subsequent calls to the accessor method.
- *
- * @return     void
- * @see        add$refTableName()
- * @see        set$pluralRefTableName()
- * @see        remove$pluralRefTableName()
- */
-public function clear$pluralRefTableName()
-{
-  \$this->$varRelatedObjectsColl = null;
-}
-
-";
-  }
+    public function addClearRelatedCollection($builder)
+    {
+        return $this->behavior->renderTemplate('addClearRelatedCollection', array(
+            'refTableName'          => $this->middleTable->getPhpName(),
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
+        ), '/templates/parent/');
+    }
 
   public function addInitRelatedCollection($builder)
   {
@@ -412,38 +394,13 @@ public function add$pluralRefTableName(\$$pluralRefTableName)
 
   public function removeObjectFromRelatedCollection($builder)
   {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $refPeerClassname = $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
-
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Method called to remove a {$objectClassname} object from the Equal Nest $pluralRefTableName relation
- *
- * @param      {$objectClassname} \$a$refTableName The {$objectClassname} object to remove as a $refTableName of the current object
- * @return     void
- * @throws     PropelException
- */
-public function remove$refTableName({$objectClassname} \$a$refTableName)
-{
-  if (null === \$this->$varRelatedObjectsColl) {
-    \$this->get$pluralRefTableName();
-  }
-
-  if (\$this->{$varRelatedObjectsColl}->contains(\$a$refTableName)) {
-    \$this->{$varRelatedObjectsColl}->remove(\$this->{$varRelatedObjectsColl}->search(\$a$refTableName));
-  } else {
-    throw new PropelException(sprintf('[Equal Nest] Cannot remove $refTableName from Equal Nest relation because it is not set as one!'));
-  }
-}
-";
+      return $this->behavior->renderTemplate('removeObjectFromRelatedCollection', array(
+          'refTableName'         => $this->middleTable->getPhpName(),
+          'varRefTableName'      => '$' . lcfirst($this->middleTable->getPhpName()),
+          'pluralRefTableName'   => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+          'objectClassname'      => $builder->getStubObjectBuilder()->getClassname(),
+          'varRelObjectsColl'    => $this->getEqualNestCollectionName($builder),
+      ), '/templates/parent/');
   }
 
   public function countObjectsInRelatedCollection($builder)
