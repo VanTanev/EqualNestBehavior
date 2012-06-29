@@ -23,7 +23,9 @@ class EqualNestBehavior extends Behavior
         'reference_column_2'    => null,
     );
 
-    /** @var EqualNestParentBehavior */
+    /**
+     * @var EqualNestParentBehavior
+     */
     protected $parentBehavior = null;
 
     public function modifyTable()
