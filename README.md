@@ -1,24 +1,39 @@
-# Equal Nest Behavior
+EqualNestBehavior
+================
 
-The Equal Nest Behavior is inspired by [Doctrine's Equal Nest Relations](http://www.doctrine-project.org/documentation/manual/1_0/en/defining-models:relationships:join-table-associations:self-referencing-nest-relations:equal-nest-relations) implementation and provides a way to define relations between objects that have equal hierarchy - think about a person and his friends.
+The EqualNestBehavior is inspired by [Doctrine's Equal Nest Relations](http://www.doctrine-project.org/documentation/manual/1_0/en/defining-models:relationships:join-table-associations:self-referencing-nest-relations:equal-nest-relations)
+implementation, and provides a way to define relations between objects that have
+equal hierarchy - think about a person and his friends.
+
 
 ### Requirements
-This behavior requires Propel >=1.6.0
+
+This behavior requires Propel >= 1.6.0.
 
 
-## Setup with vanilla Propel
+### Installation
 
-Copy the behavior to `generator/lib/behavior/equal_nest` and then register the behavior class by adding the following to the bottom of the `build.properties` file in you project folder:
+Get the code by cloning this repository, or by using Composer (recommended):
 
-```ini
-# check that you have behaviors enabled
-propel.builder.addBehaviors = true
-
-# and add the custom behavior
-propel.behavior.equal_nest.class = behavior.equal_nest.src.EqualNestBehavior
+```javascript
+{
+    "require": {
+        "craftyshadow/propel-equalnest-behavior": "dev-master"
+    }
+}
 ```
 
-Then in your schema.xml:
+Then, if you don't use Composer, or an autoloader in your application, add the
+following configuration to your `build.properties` or `propel.ini` file:
+
+```ini
+propel.behavior.equal_nest.class = vendor.craftyshadow.propel-equalnest-behavior.src.EqualNestBehavior
+```
+
+> Note: `vendor.craftyshadow.propel-equalnest-behavior.src.EqualNestBehavior` is the path to access the `EqualNestBehavior` class in "dot-path" notation.
+
+
+Then declare the behavior in your `schema.xml`:
 
 ```xml
 <table name="person">
@@ -35,9 +50,11 @@ Then in your schema.xml:
 ```
 
 
-## Setup with symfony 1.4
+#### Setup with symfony 1.4
 
-Copy the behavior to `lib/vendor/equal_nest_behavior` and then register the behavior class by adding the following to the bottom of the `config/propel.ini` file:
+Copy the behavior to `lib/vendor/equal_nest_behavior` and then register the
+behavior class by adding the following to the bottom of the `config/propel.ini`
+file:
 
 ```ini
 ; check that you have behaviors enabled
@@ -47,7 +64,7 @@ propel.builder.addBehaviors = true
 propel.behavior.equal_nest.class = lib.vendor.equal_nest_behavior.EqualNestBehavior
 ```
 
-Then in your schema.yml:
+Then in your `schema.yml`:
 
 ```yaml
 propel:
@@ -65,13 +82,15 @@ propel:
 ```
 
 
-## Usage
+### Usage
 
-Continuing with the example above, here is how you would use the Person object to define Friend relationships:
+Continuing with the example above, here is how you would use the `Person` object
+to define `Friend` relationships:
 
 ```php
 <?php
-$john = new Person();
+
+$john  = new Person();
 $peter = new Person();
 $marry = new Person();
 
@@ -89,10 +108,10 @@ $john->getFriends(); // empty array
 $john->save(); // commit to the DB
 ```
 
-The most important thing to remember is that **all changes are committed to the database only after you call the `->save()` method!**
+The most important thing to remember is that **all changes are committed to the
+database only after you call the `->save()` method!**
 
-
-### Keep in mind that relations are non-transitional:
+Also, keep in mind that **relations are non-transitional**:
 
 ```php
 <?php
@@ -104,55 +123,38 @@ $john->hasFriend($peter); // false
 If you need this you will have to manually implement it.
 
 
-## Full behavior settings (You do not need to use this, but it's good to know):
-
-```xml
-<table name="person">
-  <column name="id" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" />
-  <column name="name" type="VARCHAR" required="true" />
-</table>
-
-<table name="friend">
-  <behavior name="equal_nest">
-    <parameter name="parent_table" value="person" />
-    <parameter name="reference_column_1" value="friend_1" />
-    <parameter name="reference_column_1" value="friend_2" />
-  </behavior>
-
-  <colum name="friend_1" required="true" primaryKey="true" type="INTEGER" />
-  <colum name="friend_2" required="true" primaryKey="true" type="INTEGER" />
-
-  <foreign-key foreignTable="person" onDelete="cascade">
-    <reference local="friend_1" foreign="id" />
-  </foreign-key>
-
-  <foreign-key foreignTable="person" onDelete="cascade">
-    <reference local="friend_2" foreign="id" />
-  </foreign-key>
-</table>
-```
-
-
-## Full API:
+### ActiveRecord API
 
 ```php
 <?php
+
 $person->addFriend($friend);
 
 $person->hasFriend($friend);
 
-$person->getFriends($criteria = null, $con = null); // get all friends, will be cached if no citeria specified. Filtered by the criteria otherwize
+// get all friends, will be cached if no citeria specified. Filtered by the criteria otherwize
+$person->getFriends($criteria = null, $con = null);
 
-$person->setFriends($friends_array); // replace the current collection of friends
+// replace the current collection of friends
+$person->setFriends($friends_array);
 
-$person->addFriends($friends_array); // append to the current collection of friends
+// append to the current collection of friends
+$person->addFriends($friends_array);
 
-$person->removeFriend($friend) // remove a specfic friend
+// remove a specfic friend
+$person->removeFriend($friend)
 
-$person->removeFriends(); // remove all friends
+// remove all friends
+$person->removeFriends();
 
 $person->countFriends($criteria = null, $distinct = false, $con = null);
+```
 
+
+### ActiveRecord API
+
+```php
+<?php
 
 PersonQuery::create()->findFriendsOf($person, $con = null);
 
@@ -160,25 +162,43 @@ PersonQuery::create()->countFriendsOf($person, $con = null);
 ```
 
 
-## Propel pluralizer
+### Parameters
 
-This behavior makes use of the Propel pluralizer when generating the relational interface. Make sure to always use the `StandardEnglishPluralizer` [bundled with Propel 1.6](http://propel.posterous.com/propel-gets-better-at-naming-things) and up whenever possible (eg when you are starting a new project).
+```xml
+<behavior name="equal_nest">
+    <parameter name="parent_table"       value="person" />
+    <parameter name="reference_column_1" value="friend_1" />
+    <parameter name="reference_column_1" value="friend_2" />
+</behavior>
+```
 
-To use the better pluralizer add the following to your `build.properties` (for standalone Propel) or `propel.ini` (for Symfony + Propel):
+
+### Propel pluralizer
+
+This behavior makes use of the Propel pluralizer when generating the relational
+interface. Make sure to always use the `StandardEnglishPluralizer`
+[bundled with Propel 1.6](http://propel.posterous.com/propel-gets-better-at-naming-things)
+and up whenever possible (eg when you are starting a new project).
+
+To use the better pluralizer add the following to your `build.properties` (for
+standalone Propel) or `propel.ini` (for symfony + Propel):
 
 ```ini
 propel.builder.pluralizer.class = builder.util.StandardEnglishPluralizer
 ```
 
 
-## License
+### Running tests
 
-Equal Nest Behavior for Propel is released under the MIT Licence.
+Install dependencies:
 
-Copyright (c) 2011 Ivan Tanev
+    php composer.phar install --dev
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Run the test suite:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    phpunit
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+### License
+
+This behavior is released under the MIT License. See the bundled LICENSE file for details.
