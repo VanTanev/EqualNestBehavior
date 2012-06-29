@@ -83,6 +83,8 @@ class EqualNestBehavior extends Behavior
 
     public function staticMethods($builder)
     {
+        $builder->declareClassFromBuilder($builder->getNewStubQueryBuilder($this->getTable()));
+
         $script = '';
         $script .= $this->addPeerBuildEqualNestRelation($builder);
         $script .= $this->addPeerRemoveEqualNestRelation($builder);
@@ -114,7 +116,7 @@ class EqualNestBehavior extends Behavior
         $fullNameRefColumn1 = $this->table->getPhpName(). '.' .$this->getReferenceColumn1()->getPhpName();
         $fullNameRefColumn2 = $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName();
 
-        return $this->renderTemplate('addPeerRemoveEqualNestRelation', array(
+        return $this->renderTemplate('addPeerCheckForEqualNestRelation', array(
             'refClassName'        => $this->parentBehavior->getTable()->getPhpName(),
             'className'           => $this->getTable()->getPhpName(),
             'queryClassName'      => $builder->getStubQueryBuilder()->getClassname(),
@@ -124,9 +126,14 @@ class EqualNestBehavior extends Behavior
 
     public function queryMethods($builder)
     {
+        $tableName = $this->table->getPhpName();
+        if (null !== $namespace = $this->table->getNamespace()) {
+            $tableName = $namespace . '\\' . $tableName;
+        }
+
         return $this->renderTemplate('queryMethods', array(
-            'fullNameRefColumn1'  => $this->table->getPhpName(). '.' .$this->getReferenceColumn1()->getPhpName(),
-            'fullNameRefColumn2'  => $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName(),
+            'fullNameRefColumn1'  => $tableName . '.' . $this->getReferenceColumn1()->getPhpName(),
+            'fullNameRefColumn2'  => $tableName . '.' . $this->getReferenceColumn2()->getPhpName(),
             'className'           => $this->getTable()->getPhpName(),
             'pluralRefClassName'  => $builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName()),
             'refClassName'        => $this->parentBehavior->getTable()->getPhpName(),

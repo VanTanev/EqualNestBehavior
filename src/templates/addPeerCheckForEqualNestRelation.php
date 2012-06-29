@@ -2,7 +2,7 @@
 /**
  * Checks whether an equal nest relation between <?php echo $className ?> objects
  *
- * @param      <?php echo $refClassName ?>|integer $object1
+ * @param      <?php echo $refClassName ?>integer $object1
  * @param      <?php echo $refClassName ?>|integer $object2
  * @param      PropelPDO $con
  * @return     <?php echo $className ?>|false

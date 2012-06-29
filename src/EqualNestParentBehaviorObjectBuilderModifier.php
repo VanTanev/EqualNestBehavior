@@ -45,6 +45,9 @@ class EqualNestParentBehaviorObjectBuilderModifier
 
    public function objectMethods($builder)
     {
+        $builder->declareClassFromBuilder($builder->getNewStubQueryBuilder($this->middleTable));
+        $builder->declareClassFromBuilder($builder->getNewStubPeerBuilder($this->middleTable));
+
         $script = '';
 
         $script .= $this->addPorcessEqualNestQueries($builder);
@@ -178,7 +181,7 @@ public function clear$pluralRefTableName()
     $refTableName = $this->middleTable->getPhpName();
     $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
     $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
+    $objectClass = $builder->getStubObjectBuilder()->getFullyQualifiedClassname();
 
     $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
 
@@ -198,7 +201,7 @@ public function clear$pluralRefTableName()
 protected function init$pluralRefTableName()
 {
   \$this->$varRelatedObjectsColl = new PropelObjectCollection();
-  \$this->{$varRelatedObjectsColl}->setModel('{$objectClassname}');
+  \$this->{$varRelatedObjectsColl}->setModel('{$objectClass}');
 }
 ";
   }
