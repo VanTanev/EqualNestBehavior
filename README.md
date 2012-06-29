@@ -15,7 +15,7 @@ Copy the behavior to `generator/lib/behavior/equal_nest` and then register the b
 propel.builder.addBehaviors = true
 
 # and add the custom behavior
-propel.behavior.equal_nest.class = behavior.equal_nest.EqualNestBehavior
+propel.behavior.equal_nest.class = behavior.equal_nest.src.EqualNestBehavior
 ```
 
 Then in your schema.xml:

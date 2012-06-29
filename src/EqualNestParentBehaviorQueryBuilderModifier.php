@@ -52,8 +52,6 @@ class EqualNestParentBehaviorQueryBuilderModifier
     $this->addFindRelatedObjects($script);
     $this->addCountRelatedObjects($script);
 
-
-
     return $script;
   }
 
@@ -102,6 +100,5 @@ public function count{$this->builder->getPluralizer()->getPluralForm($this->midd
 }
 ";
   }
-
 
 }
