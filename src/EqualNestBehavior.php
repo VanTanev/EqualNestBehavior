@@ -16,196 +16,166 @@
  */
 class EqualNestBehavior extends Behavior
 {
-  // default parameters value
-  protected $parameters = array(
-    'parent_table'          => null,
-    'reference_column_1'    => null,
-    'reference_column_2'    => null,
-  );
+    // default parameters value
+    protected $parameters = array(
+        'parent_table'          => null,
+        'reference_column_1'    => null,
+        'reference_column_2'    => null,
+    );
 
-  /** @var EqualNestParentBehavior */
-  protected $parentBehavior = null;
+    /** @var EqualNestParentBehavior */
+    protected $parentBehavior = null;
 
-  public function modifyTable()
-  {
-    $table = $this->getTable();
-    $parentTable = $this->getParentTable();
-    if (count($parentTable->getPrimaryKey()) > 1) {
-      throw new Exception('Equal nest works only with a single primary key for the parent table');
+    public function modifyTable()
+    {
+        $table = $this->getTable();
+        $parentTable = $this->getParentTable();
+
+        if (count($parentTable->getPrimaryKey()) > 1) {
+            throw new Exception('Equal nest works only with a single primary key for the parent table');
+        }
+
+        $parentTablePrimaryKey = $parentTable->getPrimaryKey();
+
+        if (!$this->getTable()->containsColumn($this->getRefecenceColumn1Name())) {
+            $this->getTable()->addColumn(array(
+                'name'          => $this->getRefecenceColumn1Name(),
+                'primaryKey'    => 'true',
+                'type'          => 'INTEGER'
+            ));
+
+            $fk = new ForeignKey();
+            $fk->setName($this->getRefecenceColumn1Name());
+            $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
+            $fk->setOnDelete(ForeignKey::CASCADE);
+            $fk->setOnUpdate(null);
+            $fk->addReference($this->getRefecenceColumn1Name(), $parentTablePrimaryKey[0]->getName());
+            $this->getTable()->addForeignKey($fk);
+        }
+
+        if (!$this->getTable()->containsColumn($this->getRefecenceColumn2Name())) {
+            $this->getTable()->addColumn(array(
+                'name'          => $this->getRefecenceColumn2Name(),
+                'primaryKey'    => 'true',
+                'type'          => 'INTEGER',
+            ));
+
+            $fk = new ForeignKey();
+            $fk->setName($this->getRefecenceColumn2Name());
+            $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
+            $fk->setOnDelete(ForeignKey::CASCADE);
+            $fk->setOnUpdate(null);
+            $fk->addReference($this->getRefecenceColumn2Name(), $parentTablePrimaryKey[0]->getName());
+            $this->getTable()->addForeignKey($fk);
+        }
+
+        if (!$parentTable->hasBehavior('equal_nest_parent')) {
+            $parentBehavior = new EqualNestParentBehavior();
+            $parentBehavior->setName('equal_nest_parent');
+            $parentBehavior->addParameter(array('name' => 'middle_table', 'value' => $this->getTable()->getName()));
+            $parentTable->addBehavior($parentBehavior);
+        }
+
+        $this->parentBehavior = $parentTable->getBehavior('equal_nest_parent');
     }
-    $parentTablePrimaryKey = $parentTable->getPrimaryKey();
 
-    if (!$this->getTable()->containsColumn($this->getRefecenceColumn1Name())) {
-      $this->getTable()->addColumn(array(
-        'name' => $this->getRefecenceColumn1Name(),
-        'primaryKey' => 'true',
-        'type' => 'INTEGER'
-      ));
+    public function staticMethods($builder)
+    {
+        $script = '';
+        $script .= $this->addPeerBuildEqualNestRelation($builder);
+        $script .= $this->addPeerRemoveEqualNestRelation($builder);
+        $script .= $this->addPeerCheckForEqualNestRelation($builder);
 
-      $fk = new ForeignKey();
-      $fk->setName($this->getRefecenceColumn1Name());
-      $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
-      $fk->setOnDelete(ForeignKey::CASCADE);
-      $fk->setOnUpdate(null);
-      $fk->addReference($this->getRefecenceColumn1Name(), $parentTablePrimaryKey[0]->getName());
-      $this->getTable()->addForeignKey($fk);
+        return $script;
     }
 
-    if (!$this->getTable()->containsColumn($this->getRefecenceColumn2Name())) {
-      $this->getTable()->addColumn(array(
-        'name' => $this->getRefecenceColumn2Name(),
-        'primaryKey' => 'true',
-        'type' => 'INTEGER',
-      ));
-      $fk = new ForeignKey();
-      $fk->setName($this->getRefecenceColumn2Name());
-      $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
-      $fk->setOnDelete(ForeignKey::CASCADE);
-      $fk->setOnUpdate(null);
-      $fk->addReference($this->getRefecenceColumn2Name(), $parentTablePrimaryKey[0]->getName());
-      $this->getTable()->addForeignKey($fk);
+    public function addPeerBuildEqualNestRelation($builder)
+    {
+        return $this->renderTemplate('addPeerBuildEqualNestRelation', array(
+            'refClassName'    => $this->parentBehavior->getTable()->getPhpName(),
+            'className'       => $this->getTable()->getPhpName(),
+            'setterRefCol1'   => $this->getSetterForReferenceColumn1(),
+            'setterRefCol2'   => $this->getSetterForReferenceColumn2(),
+        ));
     }
 
-    if (!$parentTable->hasBehavior('equal_nest_parent')) {
-      $parentBehavior = new EqualNestParentBehavior();
-      $parentBehavior->setName('equal_nest_parent');
-      $parentBehavior->addParameter(array('name' => 'middle_table', 'value' => $this->getTable()->getName()));
-      $parentTable->addBehavior($parentBehavior);
+    public function addPeerRemoveEqualNestRelation($builder)
+    {
+        return $this->renderTemplate('addPeerRemoveEqualNestRelation', array(
+            'refClassName'    => $this->parentBehavior->getTable()->getPhpName(),
+            'className'       => $this->getTable()->getPhpName(),
+        ));
     }
 
-    $this->parentBehavior = $parentTable->getBehavior('equal_nest_parent');
-  }
+    public function addPeerCheckForEqualNestRelation($builder)
+    {
+        $fullNameRefColumn1 = $this->table->getPhpName(). '.' .$this->getReferenceColumn1()->getPhpName();
+        $fullNameRefColumn2 = $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName();
 
-  public function staticMethods($builder)
-  {
-    $this->builder = $builder;
-    $script = '';
-    $this->addPeerBuildEqualNestRelation($script);
-    $this->addPeerRemoveEqualNestRelation($script);
-    $this->addPeerCheckForEqualNestRelation($script);
+        return $this->renderTemplate('addPeerRemoveEqualNestRelation', array(
+            'refClassName'        => $this->parentBehavior->getTable()->getPhpName(),
+            'className'           => $this->getTable()->getPhpName(),
+            'queryClassName'      => $builder->getStubQueryBuilder()->getClassname(),
+            'pluralRefClassName'  => $builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName()),
+        ));
+    }
 
-    return $script;
-  }
+    public function queryMethods($builder)
+    {
+        return $this->renderTemplate('queryMethods', array(
+            'fullNameRefColumn1'  => $this->table->getPhpName(). '.' .$this->getReferenceColumn1()->getPhpName(),
+            'fullNameRefColumn2'  => $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName(),
+            'className'           => $this->getTable()->getPhpName(),
+            'pluralRefClassName'  => $builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName()),
+            'refClassName'        => $this->parentBehavior->getTable()->getPhpName(),
+            'queryClassName'      => $builder->getStubQueryBuilder()->getClassname(),
+        ));
+    }
 
-  public function addPeerBuildEqualNestRelation(&$script)
-  {
-    $script .= "
-/**
- * Builds a new equal nest relation between {$this->parentBehavior->getTable()->getPhpName()} objects
- *
- * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object1
- * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object2
- * @param      PropelPDO \$con
- * @return     void
- */
-public static function buildEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, PropelPDO \$con = null)
-{
-  if (self::checkForExistingEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, \$con = null)) {
-    return;
-  }
+    protected function getParentTable()
+    {
+        if (null === $this->getParameter('parent_table')) {
+            throw new Exception('You must set a parent table for the Equal Nest behavior');
+        }
 
-  \$a{$this->getTable()->getPhpName()} = new {$this->getTable()->getPhpName()}();
-  \$a{$this->getTable()->getPhpName()}->set{$this->getTable()->getColumn($this->getRefecenceColumn1Name())->getPhpName()}(is_object(\$object1) ? \$object1->getPrimaryKey() : \$object1);
-  \$a{$this->getTable()->getPhpName()}->set{$this->getTable()->getColumn($this->getRefecenceColumn2Name())->getPhpName()}(is_object(\$object2) ? \$object2->getPrimaryKey() : \$object2);
-  \$a{$this->getTable()->getPhpName()}->save();
-}
-";
-  }
+        return $this->getTable()->getDatabase()->getTable($this->getParameter('parent_table'));
+    }
 
-  public function addPeerRemoveEqualNestRelation(&$script)
-  {
-    $script .= "
-/**
- * Removes a new equal nest relation between {$this->parentBehavior->getTable()->getPhpName()} objects
- *
- * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object1
- * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object2
- * @param      PropelPDO \$con
- * @return     void
- */
-public static function removeEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, PropelPDO \$con = null)
-{
-  if (!\$relation = self::checkForExistingEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, \$con = null)) {
-    throw new PropelException('[Equal Nest] Cannot remove a relation that does not exist.');
-  }
+    public function getRefecenceColumn1Name()
+    {
+        if (null === $this->getParameter('reference_column_1')) {
+            return strtolower($this->getParentTable()->getPhpName()) . '_1';
+        } else {
+            return $this->getParameter('reference_column_1');
+        }
+    }
 
-  \$relation->delete();
-}
-";
-  }
+    public function getRefecenceColumn2Name()
+    {
+        if (null === $this->getParameter('reference_column_2')) {
+            return strtolower($this->getParentTable()->getPhpName()) . '_2';
+        } else {
+            return $this->getParameter('reference_column_2');
+        }
+    }
 
-  public function addPeerCheckForEqualNestRelation(&$script)
-  {
-    $fullNameRefColumn1 = $this->table->getPhpName(). '.' .$this->getReferenceColumn1()->getPhpName();
-    $fullNameRefColumn2 = $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName();
+    public function getReferenceColumn1()
+    {
+        return $this->table->getColumn($this->getRefecenceColumn1Name());
+    }
 
-    $script .= "
-/**
- * Checks whether an equal nest relation between {$this->parentBehavior->getTable()->getPhpName()} objects
- *
- * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object1
- * @param      {$this->parentBehavior->getTable()->getPhpName()}|integer \$object2
- * @param      PropelPDO \$con
- * @return     {$this->getTable()->getPhpName()}|false
- */
-public static function checkForExistingEqualNest{$this->getTable()->getPhpName()}Relation(\$object1, \$object2, PropelPDO \$con = null)
-{
-  if (\$object1 instanceof {$this->parentBehavior->getTable()->getPhpName()} && \$object1->isNew()) return false;
-  if (\$object2 instanceof {$this->parentBehavior->getTable()->getPhpName()} && \$object2->isNew()) return false;
+    public function getReferenceColumn2()
+    {
+        return $this->table->getColumn($this->getRefecenceColumn2Name());
+    }
 
-  return (\$relation = {$this->builder->getStubQueryBuilder()->getClassname()}::create()
-    ->filterBy{$this->builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName())}(\$object1, \$object2)
-    ->findOne(\$con)) ? \$relation : false;
-}
-";
-  }
+    protected function getSetterForReferenceColumn1()
+    {
+        return sprintf('set%s', $this->getTable()->getColumn($this->getRefecenceColumn1Name())->getPhpName());
+    }
 
-  public function queryMethods($builder)
-  {
-      return $this->renderTemplate('queryMethods', array(
-          'fullNameRefColumn1'  => $this->table->getPhpName(). '.' .$this->getReferenceColumn1()->getPhpName(),
-          'fullNameRefColumn2'  => $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName(),
-          'className'           => $this->getTable()->getPhpName(),
-          'pluralRefClassName'  => $builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName()),
-          'refClassName'        => $this->parentBehavior->getTable()->getPhpName(),
-          'queryClassName'      => $this->builder->getStubQueryBuilder()->getClassname(),
-      ));
-  }
-
-  protected function getParentTable()
-  {
-      if (null === $this->getParameter('parent_table')) {
-          throw new Exception('You must set a parent table for the Equal Nest behavior');
-      }
-
-      return $this->getTable()->getDatabase()->getTable($this->getParameter('parent_table'));
-  }
-
-  public function getRefecenceColumn1Name()
-  {
-      if (null === $this->getParameter('reference_column_1')) {
-          return strtolower($this->getParentTable()->getPhpName()) . '_1';
-      } else {
-          return $this->getParameter('reference_column_1');
-      }
-  }
-
-  public function getRefecenceColumn2Name()
-  {
-      if (null === $this->getParameter('reference_column_2')) {
-          return strtolower($this->getParentTable()->getPhpName()) . '_2';
-      } else {
-          return $this->getParameter('reference_column_2');
-      }
-  }
-
-  public function getReferenceColumn1()
-  {
-      return $this->table->getColumn($this->getRefecenceColumn1Name());
-  }
-
-  public function getReferenceColumn2()
-  {
-      return $this->table->getColumn($this->getRefecenceColumn2Name());
-  }
+    protected function getSetterForReferenceColumn2()
+    {
+        return sprintf('set%s', $this->getTable()->getColumn($this->getRefecenceColumn2Name())->getPhpName());
+    }
 }
