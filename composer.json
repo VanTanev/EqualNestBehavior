@@ -1,0 +1,18 @@
+{
+    "name": "craftyshadow/propel-equalnest-behavior",
+    "description": "This behavior provides a way to define relations between objects that have equal hierarchy (friendship).",
+    "keywords": [ "propel", "behavior", "equal nest", "friendship" ],
+    "license": "MIT",
+    "require": {
+        "propel/propel1": "1.6.*"
+    },
+    "authors": [
+        {
+            "name": "Ivan Plamenov Tanev",
+            "email": "vankata.t@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": ["src/"]
+    }
+}
