@@ -7,7 +7,7 @@
  */
 public function processEqualNestQueries(PropelPDO $con = null)
 {
-    if (false === $this->alreadyInEqualNestProcessing && null !== $this-><?php $collName ?>) {
+    if (false === $this->alreadyInEqualNestProcessing && null !== $this-><?php echo $collName ?>) {
 
         if (null === $con) {
             $con = Propel::getConnection(<?php echo $peerClassname ?>::DATABASE_NAME, Propel::CONNECTION_WRITE);
@@ -18,7 +18,7 @@ public function processEqualNestQueries(PropelPDO $con = null)
         $this->clearList<?php echo $pluralRefTableName ?>PKs();
         $this->initList<?php echo $pluralRefTableName ?>PKs($con);
 
-        $this-><?php $collName ?>->save();
+        $this-><?php echo $collName ?>->save();
 
         $con->beginTransaction();
 
@@ -26,7 +26,7 @@ public function processEqualNestQueries(PropelPDO $con = null)
             foreach ($this->get<?php echo $pluralRefTableName ?>()->getPrimaryKeys($usePrefix = false) as $columnKey => $pk) {
                 if (!in_array($pk, $this-><?php echo $listName ?>)) {
                     // save new equal nest relation
-                    <?php echo $refPeerClassname ?>::buildEqualNest<?php $refTableName ?>Relation($this, $pk, $con);
+                    <?php echo $refPeerClassname ?>::buildEqualNest<?php echo $refTableName ?>Relation($this, $pk, $con);
                     // add this object to the sibling's collection
                     $this->get<?php echo $pluralRefTableName ?>()->get($columnKey)->add<?php echo $refTableName ?>($this);
                 } else {

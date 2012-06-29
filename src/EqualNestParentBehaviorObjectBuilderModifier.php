@@ -37,7 +37,9 @@ class EqualNestParentBehaviorObjectBuilderModifier
 
         return $this->behavior->renderTemplate('objectAttributes', array(
             'objectClassname' => $objectClassname,
+            'refClassName'    => $this->middleTable->getPhpName(),
             'collName'        => $this->getEqualNestCollectionName($builder),
+            'listName'        => $this->getEqualNestListPksName($builder),
         ), '/templates/parent/');
     }
 
@@ -45,25 +47,25 @@ class EqualNestParentBehaviorObjectBuilderModifier
     {
         $script = '';
 
-        return $this->addPorcessEqualNestQueries($builder);
-        return $this->addClearListRelatedPKs($builder);
+        $script .= $this->addPorcessEqualNestQueries($builder);
+        $script .= $this->addClearListRelatedPKs($builder);
 
-        return $this->addInitListRelatedPKs($builder);
-        return $this->addClearRelatedCollection($builder);
+        $script .= $this->addInitListRelatedPKs($builder);
+        $script .= $this->addClearRelatedCollection($builder);
 
-        return $this->addInitRelatedCollection($builder);
-        return $this->addRemoveAllRelations($builder);
+        $script .= $this->addInitRelatedCollection($builder);
+        $script .= $this->addRemoveAllRelations($builder);
 
-        return $this->addGetRelatedCollection($builder);
-        return $this->addSetRelatedColelction($builder);
+        $script .= $this->addGetRelatedCollection($builder);
+        $script .= $this->addSetRelatedColelction($builder);
 
-        return $this->hasObjectInRelatedCollection($builder);
-        return $this->setObjectsOfRelatedCollection($builder);
+        $script .= $this->hasObjectInRelatedCollection($builder);
+        $script .= $this->setObjectsOfRelatedCollection($builder);
 
-        return $this->addObjectToRelatedCollection($builder);
-        return $this->removeObjectFromRelatedCollection($builder);
+        $script .= $this->addObjectToRelatedCollection($builder);
+        $script .= $this->removeObjectFromRelatedCollection($builder);
 
-        return $this->countObjectsInRelatedCollection($builder);
+        $script .= $this->countObjectsInRelatedCollection($builder);
 
         return $script;
     }

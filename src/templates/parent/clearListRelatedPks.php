@@ -2,7 +2,7 @@
 /**
  * Clears out the list of Equal Nest <?php echo $pluralRefTableName ?> PKs
  */
-public function clearList<?php echo $pluralRefTableName ?>
+public function clearList<?php echo $pluralRefTableName ?>()
 {
     $this-><?php echo $listName ?> = null;
 }
