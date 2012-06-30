@@ -106,48 +106,23 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-  public function addInitListRelatedPKs($builder)
-  {
-    $ucMiddleTableName = strtoupper($this->middleTable->getPhpName());
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
+    public function addInitListRelatedPKs($builder)
+    {
+        $pk = current($this->table->getPrimaryKey());
 
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Initializes the list of Equal Nest $pluralRefTableName PKs.
- *
- * This will query the database for Equal Nest $pluralRefTableName relations to this {$objectClassname} object.
- * It will set the list to an empty array if the object is newly created.
- *
- * @param      PropelPDO \$con
- * @return     void
- */
-protected function initList{$pluralRefTableName}PKs(PropelPDO \$con = null)
-{
-  if (\$con === null) {
-    \$con = Propel::getConnection({$peerClassname}::DATABASE_NAME, Propel::CONNECTION_READ);
-  }
-
-  if (null === \$this->$varListRelatedPKs) {
-    if (\$this->isNew()) {
-      \$this->$varListRelatedPKs = array();
-    } else {
-      \$stmt = \$con->prepare($peerClassname::LIST_EQUAL_NEST_{$ucMiddleTableName}_PKs_QUERY);
-      \$stmt->bindValue(':{$pk->getStudlyPhpName()}', \$this->getPrimaryKey(), PDO::PARAM_INT);
-      \$stmt->execute();
-
-      \$this->$varListRelatedPKs = \$stmt->fetchAll(PDO::FETCH_COLUMN);
+        return $this->behavior->renderTemplate('addInitListRelatedPKs', array(
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
+            'peerClassname'         => $builder->getStubPeerBuilder()->getClassname(),
+            'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
+            'pkName'                => $pk->getStudlyPhpName(),
+            'tablePk'               => $pk->getFullyQualifiedName(),
+            'tableName'             => $this->table->getName(),
+            'middleTableName'       => $this->middleTable->getName(),
+            'refColumn1'            => $this->middleBehavior->getReferenceColumn1()->getFullyQualifiedName(),
+            'refColumn2'            => $this->middleBehavior->getReferenceColumn2()->getFullyQualifiedName(),
+        ), '/templates/parent/');
     }
-  }
-}
-";
-  }
 
     public function addClearRelatedCollection($builder)
     {

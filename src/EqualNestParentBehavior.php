@@ -19,8 +19,6 @@ class EqualNestParentBehavior extends Behavior
 
     protected $queryBuilderModifier;
 
-    protected $peerBuilderModifier;
-
     protected $parameters = array(
         'middle_table' => null,
     );
@@ -46,14 +44,5 @@ class EqualNestParentBehavior extends Behavior
         }
 
         return $this->queryBuilderModifier;
-    }
-
-    public function getPeerBuilderModifier()
-    {
-        if (null === $this->peerBuilderModifier) {
-            $this->peerBuilderModifier = new EqualNestParentBehaviorPeerBuilderModifier($this, $this->getMiddleTable());
-        }
-
-        return $this->peerBuilderModifier;
     }
 }
