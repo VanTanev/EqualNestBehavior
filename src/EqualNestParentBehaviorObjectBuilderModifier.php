@@ -25,11 +25,11 @@ class EqualNestParentBehaviorObjectBuilderModifier
 
     public function __construct($behavior, $middleTable)
     {
-      $this->behavior         = $behavior;
-      $this->table            = $behavior->getTable();
-      $this->middleTable      = $middleTable;
-      $this->middleBehavior   = $this->middleTable->getBehavior('equal_nest');
-  }
+        $this->behavior         = $behavior;
+        $this->table            = $behavior->getTable();
+        $this->middleTable      = $middleTable;
+        $this->middleBehavior   = $this->middleTable->getBehavior('equal_nest');
+    }
 
     public function objectAttributes($builder)
     {
@@ -43,7 +43,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-   public function objectMethods($builder)
+    public function objectMethods($builder)
     {
         $builder->declareClassFromBuilder($builder->getNewStubQueryBuilder($this->middleTable));
         $builder->declareClassFromBuilder($builder->getNewStubPeerBuilder($this->middleTable));
@@ -73,10 +73,10 @@ class EqualNestParentBehaviorObjectBuilderModifier
         return $script;
     }
 
-  public function postSave($builder)
-  {
-      return $this->behavior->renderTemplate('postSave', array(), '/templates/parent/');
-  }
+    public function postSave($builder)
+    {
+        return $this->behavior->renderTemplate('postSave', array(), '/templates/parent/');
+    }
 
     public function objectClearReferences($builder)
     {
@@ -87,16 +87,16 @@ class EqualNestParentBehaviorObjectBuilderModifier
     }
 
     public function addPorcessEqualNestQueries($builder)
-  {
-      return $this->behavior->renderTemplate('processEqualNestQueries', array(
-          'collName'            => $this->getEqualNestCollectionName($builder),
-          'listName'            => $this->getEqualNestListPksName($builder),
-          'peerClassname'       => $builder->getStubPeerBuilder()->getClassname(),
-          'refPeerClassname'    => $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname(),
-          'refTableName'        => $this->middleTable->getPhpName(),
-          'pluralRefTableName'  => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
-      ), '/templates/parent/');
-  }
+    {
+        return $this->behavior->renderTemplate('processEqualNestQueries', array(
+            'collName'            => $this->getEqualNestCollectionName($builder),
+            'listName'            => $this->getEqualNestListPksName($builder),
+            'peerClassname'       => $builder->getStubPeerBuilder()->getClassname(),
+            'refPeerClassname'    => $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname(),
+            'refTableName'        => $this->middleTable->getPhpName(),
+            'pluralRefTableName'  => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+        ), '/templates/parent/');
+    }
 
     public function addClearListRelatedPKs($builder)
     {
@@ -133,56 +133,22 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-  public function addInitRelatedCollection($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $objectClass = $builder->getStubObjectBuilder()->getFullyQualifiedClassname();
+    public function addInitRelatedCollection($builder)
+    {
+        return $this->behavior->renderTemplate('addInitRelatedCollection', array(
+            'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'objectClass'           => $builder->getStubObjectBuilder()->getFullyQualifiedClassname(),
+        ), '/templates/parent/');
+    }
 
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Initializes the $varRelatedObjectsColl collection.
- *
- * By default this just sets the $varRelatedObjectsColl collection to an empty PropelObjectCollection;
- * however, you may wish to override this method in your stub class to provide setting appropriate
- * to your application -- for example, setting the initial array to the values stored in database (ie, calling get$pluralRefTableName).
- *
- * @return     void
- */
-protected function init$pluralRefTableName()
-{
-  \$this->$varRelatedObjectsColl = new PropelObjectCollection();
-  \$this->{$varRelatedObjectsColl}->setModel('{$objectClass}');
-}
-";
-  }
-
-  public function addRemoveAllRelations($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-
-    return "
-/**
- * Removes all Equal Nest $pluralRefTableName relations
- *
- * @return     void
- * @see        add$refTableName()
- * @see        set$pluralRefTableName()
- */
-public function remove$pluralRefTableName()
-{
-  // this sets the collection to an empty Propel object collection; upon save, all relations will be removed
-  self::init$pluralRefTableName();
-}
-";
-  }
+    public function addRemoveAllRelations($builder)
+    {
+        return $this->behavior->renderTemplate('addRemoveAllRelations', array(
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'refTableName'          => $this->middleTable->getPhpName(),
+        ), '/templates/parent/');
+    }
 
   public function addGetRelatedCollection($builder)
   {
@@ -337,46 +303,25 @@ public function add$refTableName({$objectClassname} \$a$refTableName)
 ";
   }
 
-  public function addObjectToRelatedCollection($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $refPeerClassname = $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
+    public function addObjectToRelatedCollection($builder)
+    {
+        return $this->behavior->renderTemplate('addObjectToRelatedCollection', array(
+            'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'refTableName'          => $this->middleTable->getPhpName(),
+        ), '/templates/parent/');
+    }
 
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Method called to associate multiple {$objectClassname} objects as Equal Nest $pluralRefTableName of this one
- *
- * @param      {$objectClassname}[] $pluralRefTableName The {$objectClassname} objects to set as Equal Nest $pluralRefTableName relation of the current object
- * @return     void
- * @throws     PropelException
- */
-public function add$pluralRefTableName(\$$pluralRefTableName)
-{
-  foreach (\$$pluralRefTableName as \$a$pluralRefTableName) {
-    \$this->add$refTableName(\$a$pluralRefTableName);
-  }
-}
-";
-  }
-
-  public function removeObjectFromRelatedCollection($builder)
-  {
-      return $this->behavior->renderTemplate('removeObjectFromRelatedCollection', array(
-          'refTableName'         => $this->middleTable->getPhpName(),
-          'varRefTableName'      => '$' . lcfirst($this->middleTable->getPhpName()),
-          'pluralRefTableName'   => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
-          'objectClassname'      => $builder->getStubObjectBuilder()->getClassname(),
-          'varRelObjectsColl'    => $this->getEqualNestCollectionName($builder),
-      ), '/templates/parent/');
-  }
+    public function removeObjectFromRelatedCollection($builder)
+    {
+        return $this->behavior->renderTemplate('removeObjectFromRelatedCollection', array(
+            'refTableName'         => $this->middleTable->getPhpName(),
+            'varRefTableName'      => '$' . lcfirst($this->middleTable->getPhpName()),
+            'pluralRefTableName'   => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'objectClassname'      => $builder->getStubObjectBuilder()->getClassname(),
+            'varRelObjectsColl'    => $this->getEqualNestCollectionName($builder),
+        ), '/templates/parent/');
+    }
 
   public function countObjectsInRelatedCollection($builder)
   {
@@ -426,33 +371,33 @@ public function count$pluralRefTableName(Criteria \$criteria = null, \$distinct 
 ";
   }
 
-  protected function getMiddleTable()
-  {
-      return $this->getTable()->getDatabase()->getTable($this->getParameter('extends'));
-  }
+    protected function getMiddleTable()
+    {
+        return $this->getTable()->getDatabase()->getTable($this->getParameter('extends'));
+    }
 
-  protected function getParameter($key)
-  {
-      return $this->behavior->getParameter($key);
-  }
+    protected function getParameter($key)
+    {
+        return $this->behavior->getParameter($key);
+    }
 
-  protected function getColumnAttribute($name)
-  {
-      return strtolower($this->behavior->getColumnForParameter($name)->getName());
-  }
+    protected function getColumnAttribute($name)
+    {
+        return strtolower($this->behavior->getColumnForParameter($name)->getName());
+    }
 
-  protected function getColumnPhpName($name)
-  {
-      return $this->behavior->getColumnForParameter($name)->getPhpName();
-  }
+    protected function getColumnPhpName($name)
+    {
+        return $this->behavior->getColumnForParameter($name)->getPhpName();
+    }
 
-  protected function getEqualNestCollectionName($builder)
-  {
-      return 'collEqualNest' .  $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-  }
+    protected function getEqualNestCollectionName($builder)
+    {
+        return 'collEqualNest' .  $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
+    }
 
-  protected function getEqualNestListPksName($builder)
-  {
-      return sprintf('listEqualNest%sPKs', $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()));
-  }
+    protected function getEqualNestListPksName($builder)
+    {
+        return sprintf('listEqualNest%sPKs', $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()));
+    }
 }
