@@ -60,7 +60,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         $script .= $this->addRemoveAllRelations($builder);
 
         $script .= $this->addGetRelatedCollection($builder);
-        $script .= $this->addSetRelatedColelction($builder);
+        $script .= $this->addSetRelatedCollection($builder);
 
         $script .= $this->hasObjectInRelatedCollection($builder);
         $script .= $this->setObjectsOfRelatedCollection($builder);
@@ -150,158 +150,49 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-  public function addGetRelatedCollection($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
+    public function addGetRelatedCollection($builder)
+    {
+        $pks = $this->table->getPrimaryKey();
+        $pk  = $pks[0];
 
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Gets an array of {$objectClassname} objects which are Equal Nest $pluralRefTableName of this object.
- *
- * If the \$criteria is not null, it is used to always fetch the results from the database.
- * Otherwise the results are fetched from the database the first time, then cached.
- * Next time the same method is called without \$criteria, the cached collection is returned.
- * If this {$objectClassname} object is new, it will return an empty collection; the criteria is ignored on a new object.
- *
- * @param      Criteria \$criteria
- * @param      PropelPDO \$con
- * @return     PropelObjectCollection {$objectClassname}[] List of Equal Nest $pluralRefTableName of this {$objectClassname}
- * @throws     PropelException
- */
-public function get$pluralRefTableName(Criteria \$criteria = null, PropelPDO \$con = null)
-{
-  if (null === \$this->$varListRelatedPKs) {
-    \$this->initList{$pluralRefTableName}PKs(\$con);
-  }
-
-  if (null === \$this->$varRelatedObjectsColl || null !== \$criteria) {
-    if (array() === \$this->$varListRelatedPKs && null === \$this->$varRelatedObjectsColl) {
-      // return empty collection
-      \$this->init$pluralRefTableName();
-    } else {
-      \$new_collection = {$builder->getStubQueryBuilder()->getClassname()}::create(null, \$criteria)
-        ->addUsingAlias({$pk->getConstantName()}, \$this->$varListRelatedPKs, Criteria::IN)
-        ->find(\$con);
-      if (null !== \$criteria) {
-        return \$new_collection;
-      }
-      \$this->$varRelatedObjectsColl = \$new_collection;
+        return $this->behavior->renderTemplate('addGetRelatedCollection', array(
+            'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'queryClassname'        => $builder->getStubQueryBuilder()->getClassname(),
+            'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
+            'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
+            'pk'                    => $pk,
+        ), '/templates/parent/');
     }
-  }
 
-  return \$this->$varRelatedObjectsColl;
-}
-";
-  }
-
-  public function addSetRelatedColelction($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $refPeerClassname = $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
-
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Set an array of {$objectClassname} objects as $pluralRefTableName of the this object
- *
- * @param      {$objectClassname}[] \$objects The {$objectClassname} objects to set as $pluralRefTableName of the current object
- * @return     void
- * @throws     PropelException
- * @see        add$refTableName()
- */
-public function set$pluralRefTableName(\$objects)
-{
-  \$this->clear$pluralRefTableName();
-  foreach (\$objects as \$a$refTableName) {
-    if (!\$a$refTableName instanceof {$objectClassname}) {
-      throw new PropelException(sprintf('[Equal Nest] Cannot set object of type %s as $refTableName, expected {$objectClassname}', is_object(\$a$refTableName) ? get_class(\$a$refTableName) : gettype(\$a$refTableName)));
-    } else {
-      \$this->add$refTableName(\$a$refTableName);
+    public function addSetRelatedCollection($builder)
+    {
+        return $this->behavior->renderTemplate('addSetRelatedCollection', array(
+            'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'refTableName'          => $this->middleTable->getPhpName(),
+        ), '/templates/parent/');
     }
-  }
-}
-";
-  }
 
-  public function hasObjectInRelatedCollection($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $refPeerClassname = $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
+    public function hasObjectInRelatedCollection($builder)
+    {
+        return $this->behavior->renderTemplate('hasObjectInRelatedCollection', array(
+            'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'refTableName'          => $this->middleTable->getPhpName(),
+            'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
+        ), '/templates/parent/');
+    }
 
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Checks for Equal Nest relation
- *
- * @param      {$objectClassname} \$a$refTableName The object to check for Equal Nest $refTableName relation to the current object
- * @return     boolean
- */
-public function has$refTableName({$objectClassname} \$a$refTableName)
-{
-  if (null === \$this->$varRelatedObjectsColl) {
-    \$this->get$pluralRefTableName();
-  }
-
-  return \$a{$refTableName}->isNew() || \$this->isNew()
-    ? in_array(\$a$refTableName, \$this->{$varRelatedObjectsColl}->getArrayCopy())
-    : in_array(\$a{$refTableName}->getPrimaryKey(), \$this->{$varRelatedObjectsColl}->getPrimaryKeys());
-}
-";
-  }
-
-  public function setObjectsOfRelatedCollection($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $refPeerClassname = $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
-    $objectClassname = $builder->getStubObjectBuilder()->getClassname();
-
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Method called to associate another {$objectClassname} object as a $refTableName of this one
- * through the Equal Nest $pluralRefTableName relation.
- *
- * @param      {$objectClassname} \$a$refTableName The {$objectClassname} object to set as Equal Nest $pluralRefTableName relation of the current object
- * @return     void
- * @throws     PropelException
- */
-public function add$refTableName({$objectClassname} \$a$refTableName)
-{
-  if (!\$this->has$refTableName(\$a$refTableName)) {
-    \$this->{$varRelatedObjectsColl}[] = \$a$refTableName;
-    \$a{$refTableName}->add{$refTableName}(\$this);
-  }
-}
-";
-  }
+    public function setObjectsOfRelatedCollection($builder)
+    {
+        return $this->behavior->renderTemplate('setObjectsOfRelatedCollection', array(
+            'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'refTableName'          => $this->middleTable->getPhpName(),
+            'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
+        ), '/templates/parent/');
+    }
 
     public function addObjectToRelatedCollection($builder)
     {
@@ -323,53 +214,19 @@ public function add$refTableName({$objectClassname} \$a$refTableName)
         ), '/templates/parent/');
     }
 
-  public function countObjectsInRelatedCollection($builder)
-  {
-    $refTableName = $this->middleTable->getPhpName();
-    $pluralRefTableName = $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName());
-    $peerClassname = $builder->getStubPeerBuilder()->getClassname();
-    $refPeerClassname = $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname();
+    public function countObjectsInRelatedCollection($builder)
+    {
+        $pks = $this->table->getPrimaryKey();
+        $pk  = $pks[0];
 
-    $pk = $this->table->getPrimaryKey(); /** @var Column */ $pk = $pk[0];
-
-    $varListRelatedPKs = "listEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}PKs";
-    $varRelatedObjectsColl = "collEqualNest{$builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName())}";
-
-    return "
-/**
- * Returns the number of Equal Nest $pluralRefTableName of this object.
- *
- * @param      Criteria \$criteria
- * @param      boolean \$distinct
- * @param      PropelPDO \$con
- * @return     integer Count of \$pluralRefTableName
- * @throws     PropelException
- */
-public function count$pluralRefTableName(Criteria \$criteria = null, \$distinct = false, PropelPDO \$con = null)
-{
-  if (null === \$this->$varListRelatedPKs) {
-    \$this->initList{$pluralRefTableName}PKs(\$con);
-  }
-
-  if (null === \$this->$varRelatedObjectsColl || null !== \$criteria) {
-    if (\$this->isNew() && null === \$this->$varRelatedObjectsColl) {
-      return 0;
-    } else {
-      \$query = {$builder->getStubQueryBuilder()->getClassname()}::create(null, \$criteria);
-      if (\$distinct) {
-        \$query->distinct();
-      }
-
-      return \$query
-        ->addUsingAlias({$pk->getConstantName()}, \$this->$varListRelatedPKs, Criteria::IN)
-        ->count(\$con);
+        return $this->behavior->renderTemplate('countObjectsInRelatedCollection', array(
+            'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
+            'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
+            'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
+            'queryClassname'        => $builder->getStubQueryBuilder()->getClassname(),
+            'pk'                    => $pk,
+        ), '/templates/parent/');
     }
-  } else {
-    return count(\$this->$varRelatedObjectsColl);
-  }
-}
-";
-  }
 
     protected function getMiddleTable()
     {
