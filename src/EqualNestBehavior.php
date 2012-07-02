@@ -12,7 +12,6 @@
  * Gives a model class the ability to support Equal Nest relations
  *
  * @author      Ivan Plamenov Tanev aka Crafty_Shadow @ WEBWORLD.BG <vankata.t@gmail.com>
- * @package     propel.generator.behavior.equal_nest
  */
 class EqualNestBehavior extends Behavior
 {
@@ -39,35 +38,35 @@ class EqualNestBehavior extends Behavior
 
         $parentTablePrimaryKey = $parentTable->getPrimaryKey();
 
-        if (!$this->getTable()->containsColumn($this->getRefecenceColumn1Name())) {
+        if (!$this->getTable()->containsColumn($this->getReferenceColumn1Name())) {
             $this->getTable()->addColumn(array(
-                'name'          => $this->getRefecenceColumn1Name(),
+                'name'          => $this->getReferenceColumn1Name(),
                 'primaryKey'    => 'true',
                 'type'          => 'INTEGER'
             ));
 
             $fk = new ForeignKey();
-            $fk->setName($this->getRefecenceColumn1Name());
+            $fk->setName($this->getReferenceColumn1Name());
             $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
             $fk->setOnDelete(ForeignKey::CASCADE);
             $fk->setOnUpdate(null);
-            $fk->addReference($this->getRefecenceColumn1Name(), $parentTablePrimaryKey[0]->getName());
+            $fk->addReference($this->getReferenceColumn1Name(), $parentTablePrimaryKey[0]->getName());
             $this->getTable()->addForeignKey($fk);
         }
 
-        if (!$this->getTable()->containsColumn($this->getRefecenceColumn2Name())) {
+        if (!$this->getTable()->containsColumn($this->getReferenceColumn2Name())) {
             $this->getTable()->addColumn(array(
-                'name'          => $this->getRefecenceColumn2Name(),
+                'name'          => $this->getReferenceColumn2Name(),
                 'primaryKey'    => 'true',
                 'type'          => 'INTEGER',
             ));
 
             $fk = new ForeignKey();
-            $fk->setName($this->getRefecenceColumn2Name());
+            $fk->setName($this->getReferenceColumn2Name());
             $fk->setForeignTableCommonName($this->getParentTable()->getCommonName());
             $fk->setOnDelete(ForeignKey::CASCADE);
             $fk->setOnUpdate(null);
-            $fk->addReference($this->getRefecenceColumn2Name(), $parentTablePrimaryKey[0]->getName());
+            $fk->addReference($this->getReferenceColumn2Name(), $parentTablePrimaryKey[0]->getName());
             $this->getTable()->addForeignKey($fk);
         }
 
@@ -150,7 +149,7 @@ class EqualNestBehavior extends Behavior
         return $this->getTable()->getDatabase()->getTable($this->getParameter('parent_table'));
     }
 
-    public function getRefecenceColumn1Name()
+    public function getReferenceColumn1Name()
     {
         if (null === $this->getParameter('reference_column_1')) {
             return strtolower($this->getParentTable()->getPhpName()) . '_1';
@@ -159,7 +158,7 @@ class EqualNestBehavior extends Behavior
         }
     }
 
-    public function getRefecenceColumn2Name()
+    public function getReferenceColumn2Name()
     {
         if (null === $this->getParameter('reference_column_2')) {
             return strtolower($this->getParentTable()->getPhpName()) . '_2';
@@ -170,21 +169,21 @@ class EqualNestBehavior extends Behavior
 
     public function getReferenceColumn1()
     {
-        return $this->table->getColumn($this->getRefecenceColumn1Name());
+        return $this->table->getColumn($this->getReferenceColumn1Name());
     }
 
     public function getReferenceColumn2()
     {
-        return $this->table->getColumn($this->getRefecenceColumn2Name());
+        return $this->table->getColumn($this->getReferenceColumn2Name());
     }
 
     protected function getSetterForReferenceColumn1()
     {
-        return sprintf('set%s', $this->getTable()->getColumn($this->getRefecenceColumn1Name())->getPhpName());
+        return sprintf('set%s', $this->getTable()->getColumn($this->getReferenceColumn1Name())->getPhpName());
     }
 
     protected function getSetterForReferenceColumn2()
     {
-        return sprintf('set%s', $this->getTable()->getColumn($this->getRefecenceColumn2Name())->getPhpName());
+        return sprintf('set%s', $this->getTable()->getColumn($this->getReferenceColumn2Name())->getPhpName());
     }
 }

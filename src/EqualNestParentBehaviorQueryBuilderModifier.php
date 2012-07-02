@@ -36,7 +36,7 @@ class EqualNestParentBehaviorQueryBuilderModifier
         return $script;
     }
 
-    public function addFindRelatedObjects($builder)
+    protected function addFindRelatedObjects($builder)
     {
         return $this->behavior->renderTemplate('addFindRelatedObjects', array(
             'pluralRefTableName'  => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
@@ -45,7 +45,7 @@ class EqualNestParentBehaviorQueryBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addCountRelatedObjects($builder)
+    protected function addCountRelatedObjects($builder)
     {
         return $this->behavior->renderTemplate('addCountRelatedObjects', array(
             'pluralRefTableName'  => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),

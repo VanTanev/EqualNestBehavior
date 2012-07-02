@@ -33,10 +33,8 @@ class EqualNestParentBehaviorObjectBuilderModifier
 
     public function objectAttributes($builder)
     {
-        $objectClassname = $builder->getStubObjectBuilder()->getClassname();
-
         return $this->behavior->renderTemplate('objectAttributes', array(
-            'objectClassname' => $objectClassname,
+            'objectClassname' => $builder->getStubObjectBuilder()->getClassname(),
             'refClassName'    => $this->middleTable->getPhpName(),
             'collName'        => $this->getEqualNestCollectionName($builder),
             'listName'        => $this->getEqualNestListPksName($builder),
@@ -86,19 +84,19 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addPorcessEqualNestQueries($builder)
+    protected function addPorcessEqualNestQueries($builder)
     {
         return $this->behavior->renderTemplate('processEqualNestQueries', array(
             'collName'            => $this->getEqualNestCollectionName($builder),
             'listName'            => $this->getEqualNestListPksName($builder),
             'peerClassname'       => $builder->getStubPeerBuilder()->getClassname(),
-            'refPeerClassname'    => $builder->getNewStubPeerBuilder($this->behavior->getMiddleTable())->getClassname(),
+            'refPeerClassname'    => $builder->getNewStubPeerBuilder($this->middleTable)->getClassname(),
             'refTableName'        => $this->middleTable->getPhpName(),
             'pluralRefTableName'  => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
         ), '/templates/parent/');
     }
 
-    public function addClearListRelatedPKs($builder)
+    protected function addClearListRelatedPKs($builder)
     {
         return $this->behavior->renderTemplate('clearListRelatedPks', array(
             'pluralRefTableName' => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
@@ -106,7 +104,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addInitListRelatedPKs($builder)
+    protected function addInitListRelatedPKs($builder)
     {
         return $this->behavior->renderTemplate('addInitListRelatedPKs', array(
             'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
@@ -122,7 +120,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addClearRelatedCollection($builder)
+    protected function addClearRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('addClearRelatedCollection', array(
             'refTableName'          => $this->middleTable->getPhpName(),
@@ -131,7 +129,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addInitRelatedCollection($builder)
+    protected function addInitRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('addInitRelatedCollection', array(
             'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
@@ -140,7 +138,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addRemoveAllRelations($builder)
+    protected function addRemoveAllRelations($builder)
     {
         return $this->behavior->renderTemplate('addRemoveAllRelations', array(
             'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
@@ -148,7 +146,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addGetRelatedCollection($builder)
+    protected function addGetRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('addGetRelatedCollection', array(
             'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
@@ -160,7 +158,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addSetRelatedCollection($builder)
+    protected function addSetRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('addSetRelatedCollection', array(
             'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
@@ -169,7 +167,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function hasObjectInRelatedCollection($builder)
+    protected function hasObjectInRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('hasObjectInRelatedCollection', array(
             'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
@@ -179,7 +177,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function setObjectsOfRelatedCollection($builder)
+    protected function setObjectsOfRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('setObjectsOfRelatedCollection', array(
             'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
@@ -189,7 +187,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function addObjectToRelatedCollection($builder)
+    protected function addObjectToRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('addObjectToRelatedCollection', array(
             'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
@@ -198,7 +196,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function removeObjectFromRelatedCollection($builder)
+    protected function removeObjectFromRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('removeObjectFromRelatedCollection', array(
             'refTableName'         => $this->middleTable->getPhpName(),
@@ -209,7 +207,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
         ), '/templates/parent/');
     }
 
-    public function countObjectsInRelatedCollection($builder)
+    protected function countObjectsInRelatedCollection($builder)
     {
         return $this->behavior->renderTemplate('countObjectsInRelatedCollection', array(
             'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
@@ -218,26 +216,6 @@ class EqualNestParentBehaviorObjectBuilderModifier
             'queryClassname'        => $builder->getStubQueryBuilder()->getClassname(),
             'pk'                    => $this->behavior->getFirstPrimaryKey(),
         ), '/templates/parent/');
-    }
-
-    protected function getMiddleTable()
-    {
-        return $this->getTable()->getDatabase()->getTable($this->getParameter('extends'));
-    }
-
-    protected function getParameter($key)
-    {
-        return $this->behavior->getParameter($key);
-    }
-
-    protected function getColumnAttribute($name)
-    {
-        return strtolower($this->behavior->getColumnForParameter($name)->getName());
-    }
-
-    protected function getColumnPhpName($name)
-    {
-        return $this->behavior->getColumnForParameter($name)->getPhpName();
     }
 
     protected function getEqualNestCollectionName($builder)
