@@ -45,6 +45,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
     {
         $builder->declareClassFromBuilder($builder->getNewStubQueryBuilder($this->middleTable));
         $builder->declareClassFromBuilder($builder->getNewStubPeerBuilder($this->middleTable));
+        $builder->declareClassFromBuilder($builder->getNewStubObjectBuilder($this->table));
 
         $script = '';
 
