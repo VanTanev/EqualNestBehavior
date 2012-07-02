@@ -170,7 +170,7 @@ PersonQuery::create()->countFriendsOf($person, $con = null);
 <behavior name="equal_nest">
     <parameter name="parent_table"       value="person" />
     <parameter name="reference_column_1" value="friend_1" />
-    <parameter name="reference_column_1" value="friend_2" />
+    <parameter name="reference_column_2" value="friend_2" />
 </behavior>
 ```
 
