@@ -33,7 +33,7 @@ class EqualNestBehavior extends Behavior
         $parentTable = $this->getParentTable();
 
         if (count($parentTable->getPrimaryKey()) > 1) {
-            throw new Exception('Equal nest works only with a single primary key for the parent table');
+            throw new RuntimeException('Equal nest works only with a single primary key for the parent table');
         }
 
         $parentTablePrimaryKey = $parentTable->getPrimaryKey();
@@ -143,7 +143,7 @@ class EqualNestBehavior extends Behavior
     protected function getParentTable()
     {
         if (null === $this->getParameter('parent_table')) {
-            throw new Exception('You must set a parent table for the Equal Nest behavior');
+            throw new InvalidArgumentException('You must set a parent table for the Equal Nest behavior');
         }
 
         return $this->getTable()->getDatabase()->getTable($this->getParameter('parent_table'));
