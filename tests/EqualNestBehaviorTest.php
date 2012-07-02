@@ -24,6 +24,9 @@ class EqualNestBehaviorTest extends TestCase
 XML;
             $this->getBuilder($schema)->build();
         }
+
+        Propel::disableInstancePooling();
+        PersonQuery::create()->deleteAll();
     }
 
     public function testObjectMethods()
@@ -105,5 +108,164 @@ XML;
         $this->assertEquals(0, $john->countFriends());
         // TODO: fix this test
         // $this->assertEquals(0, $jean->countFriends());
+    }
+
+    public function testGetFriends()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $jean = new Person();
+        $jean->setName('jean');
+
+        $john->addFriend($jean);
+        $john->save();
+
+        $this->assertEquals(2, PersonQuery::create()->count());
+
+        $this->assertTrue($jean->hasFriend($john));
+        $this->assertTrue($john->hasFriend($jean));
+
+        $coll = $jean->getFriends();
+        $this->assertInstanceOf('PropelObjectCollection', $coll);
+        $this->assertFalse($coll->isEmpty());
+        $this->assertInstanceOf('Person', $coll[0]);
+        $this->assertEquals('john', $coll[0]->getName());
+
+        $coll = $john->getFriends();
+        $this->assertInstanceOf('PropelObjectCollection', $coll);
+        $this->assertFalse($coll->isEmpty());
+        $this->assertInstanceOf('Person', $coll[0]);
+        $this->assertEquals('jean', $coll[0]->getName());
+    }
+
+    public function testSetFriendsWithArray()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $jean = new Person();
+        $jean->setName('jean');
+        $phil = new Person();
+        $phil->setName('phil');
+
+        $john->setFriends(array($jean, $phil));
+        $john->save();
+
+        $this->assertEquals(3, PersonQuery::create()->count());
+
+        $this->assertTrue($john->hasFriend($jean));
+        $this->assertTrue($john->hasFriend($phil));
+        $this->assertTrue($phil->hasFriend($john));
+        $this->assertTrue($jean->hasFriend($john));
+
+        $this->assertEquals(2, count($john->getFriends()));
+    }
+
+    public function testSetFriendsWithPropelCollection()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $jean = new Person();
+        $jean->setName('jean');
+        $phil = new Person();
+
+        $phil->setName('phil');
+
+        $coll = new \PropelCollection();
+        $coll->append($jean);
+        $coll->append($phil);
+
+        $john->setFriends($coll);
+        $john->save();
+
+        $this->assertEquals(3, PersonQuery::create()->count());
+
+        $this->assertTrue($john->hasFriend($jean));
+        $this->assertTrue($john->hasFriend($phil));
+        $this->assertTrue($phil->hasFriend($john));
+        $this->assertTrue($jean->hasFriend($john));
+
+        $this->assertEquals(2, count($john->getFriends()));
+    }
+
+    public function testAddFriendsWithArray()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $jean = new Person();
+        $jean->setName('jean');
+        $phil = new Person();
+        $phil->setName('phil');
+
+        $john->setFriends(array($jean, $phil));
+        $john->save();
+
+        $this->assertEquals(3, PersonQuery::create()->count());
+
+        $this->assertTrue($john->hasFriend($jean));
+        $this->assertTrue($john->hasFriend($phil));
+        $this->assertTrue($phil->hasFriend($john));
+        $this->assertTrue($jean->hasFriend($john));
+
+        $this->assertEquals(2, count($john->getFriends()));
+
+        $henri = new Person();
+        $henri->setName('henri');
+        $marco = new Person();
+        $marco->setName('marco');
+
+        $john->addFriends(array($henri, $marco));
+        $john->save();
+
+        $this->assertEquals(5, PersonQuery::create()->count());
+
+        $this->assertTrue($john->hasFriend($henri));
+        $this->assertTrue($john->hasFriend($marco));
+        $this->assertTrue($marco->hasFriend($john));
+        $this->assertTrue($henri->hasFriend($john));
+
+        $this->assertEquals(4, count($john->getFriends()));
+    }
+
+    public function testAddFriendsWithPropelCollection()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $jean = new Person();
+        $jean->setName('jean');
+        $phil = new Person();
+        $phil->setName('phil');
+
+        $john->setFriends(array($jean, $phil));
+        $john->save();
+
+        $this->assertEquals(3, PersonQuery::create()->count());
+
+        $this->assertTrue($john->hasFriend($jean));
+        $this->assertTrue($john->hasFriend($phil));
+        $this->assertTrue($phil->hasFriend($john));
+        $this->assertTrue($jean->hasFriend($john));
+
+        $this->assertEquals(2, count($john->getFriends()));
+
+        $henri = new Person();
+        $henri->setName('henri');
+        $marco = new Person();
+        $marco->setName('marco');
+
+        $coll = new PropelCollection();
+        $coll->append($henri);
+        $coll->append($marco);
+
+        $john->addFriends($coll);
+        $john->save();
+
+        $this->assertEquals(5, PersonQuery::create()->count());
+
+        $this->assertTrue($john->hasFriend($henri));
+        $this->assertTrue($john->hasFriend($marco));
+        $this->assertTrue($marco->hasFriend($john));
+        $this->assertTrue($henri->hasFriend($john));
+
+        $this->assertEquals(4, count($john->getFriends()));
     }
 }
