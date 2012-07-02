@@ -299,4 +299,33 @@ XML;
         $this->assertFalse($phil->hasFriend($john));
         $this->assertFalse($jean->hasFriend($john));
     }
+
+    public function testCountFriends()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $jean = new Person();
+        $jean->setName('jean');
+        $phil = new Person();
+        $phil->setName('phil');
+
+        $this->assertEquals(0, $john->countFriends());
+
+        $john->setFriends(array($jean, $phil));
+        $john->save();
+
+        $this->assertEquals(2, $john->countFriends());
+
+        $john->removeFriends();
+        $this->assertEquals(0, $john->countFriends());
+
+        $john->save();
+        $this->assertEquals(0, $john->countFriends());
+
+        $john->addFriend($phil);
+        $this->assertEquals(1, $john->countFriends());
+
+        $john->save();
+        $this->assertEquals(1, $john->countFriends());
+    }
 }
