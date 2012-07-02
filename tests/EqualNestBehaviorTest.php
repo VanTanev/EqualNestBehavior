@@ -421,4 +421,26 @@ XML;
         $this->assertEquals(0, PersonQuery::create()->findFriendsOf($phil)->count());
         $this->assertEquals(0, PersonQuery::create()->findFriendsOf($jean)->count());
     }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testNoParentParameterThrowsException()
+    {
+        $schema = <<<XML
+<database name="equal_nest_behavior_2">
+    <table name="person_2">
+        <column name="id" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" />
+        <column name="name" type="VARCHAR" required="true" />
+    </table>
+
+    <table name="friend_2">
+        <behavior name="equal_nest">
+            <!-- mandatory parameter missing here -->
+        </behavior>
+    </table>
+</database>
+XML;
+        $this->getBuilder($schema)->build();
+    }
 }
