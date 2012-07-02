@@ -268,4 +268,35 @@ XML;
 
         $this->assertEquals(4, count($john->getFriends()));
     }
+
+    public function testRemoveFriendsWithArray()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $jean = new Person();
+        $jean->setName('jean');
+        $phil = new Person();
+        $phil->setName('phil');
+
+        $john->setFriends(array($jean, $phil));
+        $john->save();
+
+        $this->assertEquals(3, PersonQuery::create()->count());
+
+        $this->assertTrue($john->hasFriend($jean));
+        $this->assertTrue($john->hasFriend($phil));
+        $this->assertTrue($phil->hasFriend($john));
+        $this->assertTrue($jean->hasFriend($john));
+
+        $john->removeFriends();
+        $john->save();
+
+        $this->assertEquals(0, count($john->getFriends()));
+        $this->assertEquals(3, PersonQuery::create()->count());
+
+        $this->assertFalse($john->hasFriend($phil));
+        $this->assertFalse($john->hasFriend($jean));
+        $this->assertFalse($phil->hasFriend($john));
+        $this->assertFalse($jean->hasFriend($john));
+    }
 }
