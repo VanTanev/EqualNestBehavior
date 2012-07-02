@@ -106,8 +106,7 @@ XML;
 
         $john->removeFriend($jean);
         $this->assertEquals(0, $john->countFriends());
-        // TODO: fix this test
-        // $this->assertEquals(0, $jean->countFriends());
+        $this->assertEquals(0, $jean->countFriends());
     }
 
     public function testGetFriends()
@@ -289,6 +288,15 @@ XML;
         $this->assertTrue($jean->hasFriend($john));
 
         $john->removeFriends();
+
+        $this->assertEquals(0, count($john->getFriends()));
+        $this->assertEquals(3, PersonQuery::create()->count());
+
+        $this->assertFalse($john->hasFriend($phil));
+        $this->assertFalse($john->hasFriend($jean));
+        $this->assertFalse($phil->hasFriend($john));
+        $this->assertFalse($jean->hasFriend($john));
+
         $john->save();
 
         $this->assertEquals(0, count($john->getFriends()));
