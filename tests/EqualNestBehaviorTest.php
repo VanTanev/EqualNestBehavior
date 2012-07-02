@@ -443,4 +443,27 @@ XML;
 XML;
         $this->getBuilder($schema)->build();
     }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testMultiplePksInParentTableThrowsException()
+    {
+        $schema = <<<XML
+<database name="equal_nest_behavior_3">
+    <table name="person_3">
+        <column name="id" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" />
+        <column name="id_2" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" />
+        <column name="name" type="VARCHAR" required="true" />
+    </table>
+
+    <table name="friend_3">
+        <behavior name="equal_nest">
+            <parameter name="parent_table" value="person_3" />
+        </behavior>
+    </table>
+</database>
+XML;
+        $this->getBuilder($schema)->build();
+    }
 }
