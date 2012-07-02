@@ -45,4 +45,11 @@ class EqualNestParentBehavior extends Behavior
 
         return $this->queryBuilderModifier;
     }
+
+    public function getFirstPrimaryKey()
+    {
+        $pks = $this->table->getPrimaryKey();
+
+        return  $pks[0];
+    }
 }

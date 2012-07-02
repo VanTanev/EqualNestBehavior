@@ -51,6 +51,7 @@ class EqualNestParentBehaviorQueryBuilderModifier
             'pluralRefTableName'  => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
             'objectClassname'     => $builder->getStubObjectBuilder()->getClassname(),
             'objectName'          => '$' . $this->table->getStudlyPhpName(),
+            'pk'                  => $this->behavior->getFirstPrimaryKey(),
         ), '/templates/parent/');
     }
 }

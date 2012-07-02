@@ -6,11 +6,7 @@
  * @param  PropelPDO $con
  * @return integer
  */
-public function count<?php echo $pluralRefTableName ?>Of(<?php echo $objectClassname ?> <?php echo $objectName ?>, $con = null)
+public function count<?php echo $pluralRefTableName ?>Of(<?php echo $objectClassname ?> <?php echo $objectName ?>, PropelPDO $con = null)
 {
-    $obj = clone <?php echo $objectName ?>;
-    $obj->clearList<?php echo $pluralRefTableName ?>PKs();
-    $obj->clear<?php echo $pluralRefTableName ?>();
-
-    return $obj->count<?php echo $pluralRefTableName ?>($this, $con);
+    return <?php echo $objectName ?>->get<?php echo $pluralRefTableName ?>()->count();
 }

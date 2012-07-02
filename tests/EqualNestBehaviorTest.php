@@ -299,8 +299,9 @@ XML;
 
         $john->save();
 
-        $this->assertEquals(0, count($john->getFriends()));
         $this->assertEquals(3, PersonQuery::create()->count());
+        $this->assertEquals(0, FriendQuery::create()->count());
+        $this->assertEquals(0, count($john->getFriends()));
 
         $this->assertFalse($john->hasFriend($phil));
         $this->assertFalse($john->hasFriend($jean));
@@ -335,5 +336,89 @@ XML;
 
         $john->save();
         $this->assertEquals(1, $john->countFriends());
+    }
+
+    public function testCountFriendsOf()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $john->save();
+
+        $jean = new Person();
+        $jean->setName('jean');
+        $jean->save();
+
+        $phil = new Person();
+        $phil->setName('phil');
+        $phil->save();
+
+        $this->assertEquals(0, FriendQuery::create()->count());
+
+        $this->assertEquals(0, PersonQuery::create()->countFriendsOf($phil));
+        $this->assertEquals(0, PersonQuery::create()->countFriendsOf($jean));
+        $this->assertEquals(0, PersonQuery::create()->countFriendsOf($john));
+
+        $jean->addFriend($phil);
+
+        $this->assertEquals(0, FriendQuery::create()->count());
+        $this->assertEquals(1, PersonQuery::create()->countFriendsOf($phil));
+        $this->assertEquals(1, PersonQuery::create()->countFriendsOf($jean));
+
+        $jean->save();
+        $this->assertEquals(1, PersonQuery::create()->countFriendsOf($phil));
+        $this->assertEquals(1, PersonQuery::create()->countFriendsOf($jean));
+
+        $this->assertEquals(1, FriendQuery::create()->count());
+
+        $jean->removeFriends();
+        $jean->save();
+
+        $this->assertEquals(0, PersonQuery::create()->countFriendsOf($jean));
+        $this->assertEquals(0, PersonQuery::create()->countFriendsOf($phil));
+    }
+
+    public function testFindFriendsOf()
+    {
+        $john = new Person();
+        $john->setName('john');
+        $john->save();
+
+        $jean = new Person();
+        $jean->setName('jean');
+        $jean->save();
+
+        $phil = new Person();
+        $phil->setName('phil');
+        $phil->save();
+
+        $this->assertEquals(0, PersonQuery::create()->findFriendsOf($phil)->count());
+        $this->assertEquals(0, PersonQuery::create()->findFriendsOf($jean)->count());
+        $this->assertEquals(0, PersonQuery::create()->findFriendsOf($john)->count());
+
+        $jean->addFriend($phil);
+        $this->assertEquals(0, PersonQuery::create()->findFriendsOf($phil)->count());
+        $this->assertEquals(0, PersonQuery::create()->findFriendsOf($jean)->count());
+
+        $jean->save();
+        $this->assertEquals(1, PersonQuery::create()->findFriendsOf($phil)->count());
+        $this->assertEquals(1, PersonQuery::create()->findFriendsOf($jean)->count());
+
+        $coll = PersonQuery::create()->findFriendsOf($phil);
+        $this->assertInstanceOf('PropelObjectCollection', $coll);
+        $this->assertInstanceOf('Person', $coll[0]);
+        $this->assertEquals('jean', $coll[0]->getName());
+
+        $coll = PersonQuery::create()->findFriendsOf($jean);
+        $this->assertInstanceOf('PropelObjectCollection', $coll);
+        $this->assertInstanceOf('Person', $coll[0]);
+        $this->assertEquals('phil', $coll[0]->getName());
+
+        $jean->removeFriends();
+        $jean->save();
+
+        $this->assertEquals(0, FriendQuery::create()->count());
+
+        $this->assertEquals(0, PersonQuery::create()->findFriendsOf($phil)->count());
+        $this->assertEquals(0, PersonQuery::create()->findFriendsOf($jean)->count());
     }
 }
