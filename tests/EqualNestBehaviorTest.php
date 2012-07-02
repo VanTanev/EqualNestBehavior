@@ -269,7 +269,7 @@ XML;
         $this->assertEquals(4, count($john->getFriends()));
     }
 
-    public function testRemoveFriendsWithArray()
+    public function testRemoveFriends()
     {
         $john = new Person();
         $john->setName('john');
