@@ -108,15 +108,13 @@ class EqualNestParentBehaviorObjectBuilderModifier
 
     public function addInitListRelatedPKs($builder)
     {
-        $pk = current($this->table->getPrimaryKey());
-
         return $this->behavior->renderTemplate('addInitListRelatedPKs', array(
             'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
             'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
             'peerClassname'         => $builder->getStubPeerBuilder()->getClassname(),
             'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
-            'pkName'                => $pk->getStudlyPhpName(),
-            'tablePk'               => $pk->getFullyQualifiedName(),
+            'pkName'                => $this->behavior->getFirstPrimaryKey()->getStudlyPhpName(),
+            'tablePk'               => $this->behavior->getFirstPrimaryKey()->getFullyQualifiedName(),
             'tableName'             => $this->table->getName(),
             'middleTableName'       => $this->middleTable->getName(),
             'refColumn1'            => $this->middleBehavior->getReferenceColumn1()->getFullyQualifiedName(),
@@ -152,16 +150,13 @@ class EqualNestParentBehaviorObjectBuilderModifier
 
     public function addGetRelatedCollection($builder)
     {
-        $pks = $this->table->getPrimaryKey();
-        $pk  = $pks[0];
-
         return $this->behavior->renderTemplate('addGetRelatedCollection', array(
             'objectClassname'       => $builder->getStubObjectBuilder()->getClassname(),
             'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
             'queryClassname'        => $builder->getStubQueryBuilder()->getClassname(),
             'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
             'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
-            'pk'                    => $pk,
+            'pk'                    => $this->behavior->getFirstPrimaryKey(),
         ), '/templates/parent/');
     }
 
@@ -216,15 +211,12 @@ class EqualNestParentBehaviorObjectBuilderModifier
 
     public function countObjectsInRelatedCollection($builder)
     {
-        $pks = $this->table->getPrimaryKey();
-        $pk  = $pks[0];
-
         return $this->behavior->renderTemplate('countObjectsInRelatedCollection', array(
             'pluralRefTableName'    => $builder->getPluralizer()->getPluralForm($this->middleTable->getPhpName()),
             'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
             'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
             'queryClassname'        => $builder->getStubQueryBuilder()->getClassname(),
-            'pk'                    => $pk,
+            'pk'                    => $this->behavior->getFirstPrimaryKey(),
         ), '/templates/parent/');
     }
 
