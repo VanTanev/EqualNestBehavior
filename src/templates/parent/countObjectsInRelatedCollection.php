@@ -5,7 +5,7 @@
  * @param      Criteria   $criteria
  * @param      boolean    $distinct
  * @param      PropelPDO  $con
- * @return     integer    Count of <?php echo $pluralRefTableName ?>
+ * @return     integer    Count of <?php echo $pluralRefTableName . "\n" ?>
  * @throws     PropelException
  */
 public function count<?php echo $pluralRefTableName ?>(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
