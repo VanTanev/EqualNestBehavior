@@ -4,18 +4,19 @@
  *
  * @param  <?php echo $objectClassname ?> <?php echo $varRefTableName ?> The <?php echo $objectClassname ?> object
  *         to remove as a <?php echo $refTableName ?> of the current object
+ * @param  PropelPDO $con
  * @throws PropelException
  */
-public function remove<?php echo $refTableName ?>(<?php echo $objectClassname ?> <?php echo $varRefTableName ?>)
+public function remove<?php echo $refTableName ?>(<?php echo $objectClassname ?> <?php echo $varRefTableName ?>, PropelPDO $con = null)
 {
     if (null === $this-><?php echo $varRelObjectsColl ?>) {
-        $this->get<?php echo $pluralRefTableName ?>();
+        $this->get<?php echo $pluralRefTableName ?>(null, $con);
     }
 
     if ($this-><?php echo $varRelObjectsColl ?>->contains(<?php echo $varRefTableName ?>)) {
         $this-><?php echo $varRelObjectsColl ?>->remove($this-><?php echo $varRelObjectsColl ?>->search(<?php echo $varRefTableName ?>));
 
-        $coll = <?php echo $varRefTableName ?>->get<?php echo $pluralRefTableName ?>();
+        $coll = <?php echo $varRefTableName ?>->get<?php echo $pluralRefTableName ?>(null, $con);
         if ($coll->contains($this)) {
             $coll->remove($coll->search($this));
         }

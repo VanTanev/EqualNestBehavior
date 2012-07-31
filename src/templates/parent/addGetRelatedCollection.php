@@ -19,7 +19,7 @@ public function get<?php echo $pluralRefTableName ?>(Criteria $criteria = null, 
     }
 
     if (null === $this-><?php echo $varRelatedObjectsColl ?> || null !== $criteria) {
-        if (array() === $this-><?php echo $varListRelatedPKs ?> && null === $this-><?php echo $varRelatedObjectsColl ?>) {
+        if (0 === count($this-><?php echo $varListRelatedPKs ?>) && null === $this-><?php echo $varRelatedObjectsColl ?>) {
             // return empty collection
             $this->init<?php echo $pluralRefTableName ?>();
         } else {
