@@ -153,7 +153,7 @@ $person->countFriends($criteria = null, $distinct = false, $con = null);
 ```
 
 
-### ActiveRecord API
+### ActiveQuery API
 
 ```php
 <?php
