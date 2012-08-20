@@ -3,7 +3,7 @@ EqualNestBehavior
 
 [![Build Status](https://secure.travis-ci.org/CraftyShadow/EqualNestBehavior.png?branch=master)](http://travis-ci.org/CraftyShadow/EqualNestBehavior)
 
-The EqualNestBehavior is inspired by [Doctrine's Equal Nest Relations](http://www.doctrine-project.org/documentation/manual/1_0/en/defining-models:relationships:join-table-associations:self-referencing-nest-relations:equal-nest-relations)
+The EqualNestBehavior is inspired by [Doctrine's Equal Nest Relations](http://docs.doctrine-project.org/projects/doctrine1/en/latest/en/manual/defining-models.html#equal-nest-relations)
 implementation, and provides a way to define relations between objects that have
 equal hierarchy - think about a person and his friends.
 
