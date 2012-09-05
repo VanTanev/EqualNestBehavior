@@ -42,7 +42,7 @@ class EqualNestBehavior extends Behavior
             $this->getTable()->addColumn(array(
                 'name'          => $this->getReferenceColumn1Name(),
                 'primaryKey'    => 'true',
-                'type'          => 'INTEGER'
+                'type'          => $parentTablePrimaryKey[0]->getType(),
             ));
 
             $fk = new ForeignKey();
@@ -58,7 +58,7 @@ class EqualNestBehavior extends Behavior
             $this->getTable()->addColumn(array(
                 'name'          => $this->getReferenceColumn2Name(),
                 'primaryKey'    => 'true',
-                'type'          => 'INTEGER',
+                'type'          => $parentTablePrimaryKey[0]->getType(),
             ));
 
             $fk = new ForeignKey();
