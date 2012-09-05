@@ -466,4 +466,30 @@ XML;
 XML;
         $this->getBuilder($schema)->build();
     }
+
+    public function testPkMatchParentPkType(){
+        $schema = <<<XML
+<database name="equal_nest_behavior_4">
+    <table name="person_4">
+        <column name="id" required="true" primaryKey="true" autoIncrement="true" type="BIGINT" />
+        <column name="name" type="VARCHAR" required="true" />
+    </table>
+
+    <table name="friend_4">
+        <behavior name="equal_nest">
+            <parameter name="parent_table" value="person_4" />
+        </behavior>
+    </table>
+</database>
+XML;
+        $build = $this->getBuilder($schema)->build();
+        $parentTable = new Person4TableMap();
+        $table = new Friend4TableMap();
+
+        list($parentKey) = $parentTable->getPrimaryKeyColumns();
+        $pks = $table->getPrimaryKeyColumns();
+        foreach($pks as $pk) {
+            $this->assertTrue($pk->getType() === $parentKey->getType());
+        }
+    }
 }
