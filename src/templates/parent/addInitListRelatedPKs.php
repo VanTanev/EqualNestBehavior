@@ -28,17 +28,18 @@ WHERE
 <?php echo $tablePk ?> IN (
     SELECT <?php echo $refColumn1 . "\n" ?>
     FROM <?php echo $middleTableName . "\n" ?>
-    WHERE <?php echo $refColumn2 ?> = :<?php echo $pkName . "\n" ?>
+    WHERE <?php echo $refColumn2 ?> = ?
 )
 OR
 <?php echo $tablePk ?> IN (
     SELECT <?php echo $refColumn2  . "\n" ?>
     FROM <?php echo $middleTableName . "\n" ?>
-    WHERE <?php echo $refColumn1 ?> = :<?php echo $pkName . "\n" ?>
+    WHERE <?php echo $refColumn1 ?> = ?
 )";
 
             $stmt = $con->prepare($sql);
-            $stmt->bindValue(':<?php echo $pkName ?>', $this->getPrimaryKey(), PDO::PARAM_INT);
+            $stmt->bindValue(1, $this->getPrimaryKey(), PDO::PARAM_INT);
+            $stmt->bindValue(2, $this->getPrimaryKey(), PDO::PARAM_INT);
             $stmt->execute();
 
             $this-><?php echo $varListRelatedPKs ?> = $stmt->fetchAll(PDO::FETCH_COLUMN);
