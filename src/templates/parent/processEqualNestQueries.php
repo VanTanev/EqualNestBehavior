@@ -8,17 +8,20 @@
 public function processEqualNestQueries(PropelPDO $con = null)
 {
     if (false === $this->alreadyInEqualNestProcessing && null !== $this-><?php echo $collName ?>) {
+        $this->alreadyInEqualNestProcessing = true;
 
         if (null === $con) {
             $con = Propel::getConnection(<?php echo $peerClassname ?>::DATABASE_NAME, Propel::CONNECTION_WRITE);
         }
 
-        $this->alreadyInEqualNestProcessing = true;
-
         $this->clearList<?php echo $pluralRefTableName ?>PKs();
         $this->initList<?php echo $pluralRefTableName ?>PKs($con);
 
-        $this-><?php echo $collName ?>->save();
+        foreach ($this-><?php echo $collName ?> as $a<?php echo $refTableName ?>) {
+            if (!$a<?php echo $refTableName ?>->isDeleted() && ($a<?php echo $refTableName ?>->isNew() || $a<?php echo $refTableName ?>->isModified())) {
+                $a<?php echo $refTableName ?>->save($con);
+            }
+        }
 
         $con->beginTransaction();
 
@@ -41,10 +44,11 @@ public function processEqualNestQueries(PropelPDO $con = null)
             }
 
             $con->commit();
-            $this->alreadyInEqualNestProcessing = false;
         } catch (PropelException $e) {
             $con->rollBack();
             throw $e;
         }
+
+        $this->alreadyInEqualNestProcessing = false;
     }
 }
