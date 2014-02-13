@@ -4,7 +4,7 @@
     "keywords": [ "propel", "behavior", "equal nest", "friendship" ],
     "license": "MIT",
     "require": {
-        "propel/propel1": "1.6.*"
+        "propel/propel1": "~1.6"
     },
     "authors": [
         {
@@ -14,6 +14,5 @@
     ],
     "autoload": {
         "classmap": ["src/"]
-    },
-    "minimum-stability": "dev"
+    }
 }
