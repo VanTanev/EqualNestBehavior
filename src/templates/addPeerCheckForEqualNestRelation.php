@@ -18,6 +18,6 @@ public static function checkForExistingEqualNest<?php echo $className ?>Relation
     }
 
     return ($relation = <?php echo $queryClassName ?>::create()
-        ->filterBy<?php echo $pluralRefClassName ?>($object1, $object2)
+        ->filterBy<?php echo $pluralClassName ?>($object1, $object2)
         ->findOne($con)) ? $relation : false;
 }
