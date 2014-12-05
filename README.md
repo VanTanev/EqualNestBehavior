@@ -20,7 +20,7 @@ Get the code by cloning this repository, or by using Composer (recommended):
 ```javascript
 {
     "require": {
-        "craftyshadow/propel-equalnest-behavior": "dev-master"
+        "craftyshadow/propel-equalnest-behavior": "~1.2"
     }
 }
 ```
