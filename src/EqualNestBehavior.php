@@ -95,7 +95,8 @@ class EqualNestBehavior extends Behavior
     public function addPeerBuildEqualNestRelation($builder)
     {
         return $this->renderTemplate('addPeerBuildEqualNestRelation', array(
-            'refClassName'    => $this->parentBehavior->getTable()->getPhpName(),
+            'refClassName'    => $builder->getNewStubObjectBuilder($this->parentBehavior->getTable())->getClassname(),
+            'objectClassName' => $builder->getStubObjectBuilder()->getClassname(),
             'className'       => $this->getTable()->getPhpName(),
             'setterRefCol1'   => $this->getSetterForReferenceColumn1(),
             'setterRefCol2'   => $this->getSetterForReferenceColumn2(),
@@ -105,7 +106,7 @@ class EqualNestBehavior extends Behavior
     public function addPeerRemoveEqualNestRelation($builder)
     {
         return $this->renderTemplate('addPeerRemoveEqualNestRelation', array(
-            'refClassName'    => $this->parentBehavior->getTable()->getPhpName(),
+            'refClassName'    => $builder->getNewStubObjectBuilder($this->parentBehavior->getTable())->getClassname(),
             'className'       => $this->getTable()->getPhpName(),
         ));
     }
@@ -116,26 +117,26 @@ class EqualNestBehavior extends Behavior
         $fullNameRefColumn2 = $this->table->getPhpName(). '.' .$this->getReferenceColumn2()->getPhpName();
 
         return $this->renderTemplate('addPeerCheckForEqualNestRelation', array(
-            'refClassName'        => $this->parentBehavior->getTable()->getPhpName(),
+            'refClassName'        => $builder->getNewStubObjectBuilder($this->parentBehavior->getTable())->getClassname(),
             'className'           => $this->getTable()->getPhpName(),
             'queryClassName'      => $builder->getStubQueryBuilder()->getClassname(),
-            'pluralRefClassName'  => $builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName()),
+            'pluralClassName'  => $builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName()),
         ));
     }
 
     public function queryMethods($builder)
     {
-        $tableName = $this->table->getPhpName();
+        $className = $builder->getStubObjectBuilder()->getClassname();
         if (null !== $namespace = $this->table->getNamespace()) {
-            $tableName = $namespace . '\\' . $tableName;
+            $className = $namespace . '\\' . $className;
         }
 
         return $this->renderTemplate('queryMethods', array(
-            'fullNameRefColumn1'  => $tableName . '.' . $this->getReferenceColumn1()->getPhpName(),
-            'fullNameRefColumn2'  => $tableName . '.' . $this->getReferenceColumn2()->getPhpName(),
+            'fullNameRefColumn1'  => $className . '.' . $this->getReferenceColumn1()->getPhpName(),
+            'fullNameRefColumn2'  => $className . '.' . $this->getReferenceColumn2()->getPhpName(),
             'className'           => $this->getTable()->getPhpName(),
             'pluralRefClassName'  => $builder->getPluralizer()->getPluralForm($this->parentBehavior->getTable()->getPhpName()),
-            'refClassName'        => $this->parentBehavior->getTable()->getPhpName(),
+            'refClassName'        => $builder->getNewStubObjectBuilder($this->parentBehavior->getTable())->getClassname(),
             'queryClassName'      => $builder->getStubQueryBuilder()->getClassname(),
         ));
     }

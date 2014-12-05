@@ -12,7 +12,7 @@ public static function buildEqualNest<?php echo $className ?>Relation($object1, 
         return;
     }
 
-    $a<?php echo $className ?> = new <?php echo $className ?>();
+    $a<?php echo $className ?> = new <?php echo $objectClassName ?>();
     $a<?php echo $className ?>-><?php echo $setterRefCol1 ?>(is_object($object1) ? $object1->getPrimaryKey() : $object1);
     $a<?php echo $className ?>-><?php echo $setterRefCol2 ?>(is_object($object2) ? $object2->getPrimaryKey() : $object2);
     $a<?php echo $className ?>->save();

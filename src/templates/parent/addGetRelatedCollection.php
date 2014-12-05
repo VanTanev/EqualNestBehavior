@@ -24,7 +24,7 @@ public function get<?php echo $pluralRefTableName ?>(Criteria $criteria = null, 
             $this->init<?php echo $pluralRefTableName ?>();
         } else {
             $newCollection = <?php echo $queryClassname ?>::create(null, $criteria)
-                ->addUsingAlias(<?php echo $pk->getConstantName() ?>, $this-><?php echo $varListRelatedPKs ?>, Criteria::IN)
+                ->addUsingAlias(<?php echo $pk ?>, $this-><?php echo $varListRelatedPKs ?>, Criteria::IN)
                 ->find($con);
 
             if (null !== $criteria) {

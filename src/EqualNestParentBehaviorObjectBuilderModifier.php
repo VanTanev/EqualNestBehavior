@@ -155,7 +155,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
             'queryClassname'        => $builder->getStubQueryBuilder()->getClassname(),
             'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
             'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
-            'pk'                    => $this->behavior->getFirstPrimaryKey(),
+            'pk'                    => $builder->getStubObjectBuilder()->getColumnConstant( $this->behavior->getFirstPrimaryKey() ),
         ), '/templates/parent/');
     }
 
@@ -215,7 +215,7 @@ class EqualNestParentBehaviorObjectBuilderModifier
             'varListRelatedPKs'     => $this->getEqualNestListPksName($builder),
             'varRelatedObjectsColl' => $this->getEqualNestCollectionName($builder),
             'queryClassname'        => $builder->getStubQueryBuilder()->getClassname(),
-            'pk'                    => $this->behavior->getFirstPrimaryKey(),
+            'pk'                    => $builder->getStubObjectBuilder()->getColumnConstant( $this->behavior->getFirstPrimaryKey() ),
         ), '/templates/parent/');
     }
 
