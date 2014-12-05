@@ -24,7 +24,7 @@ public function count<?php echo $pluralRefTableName ?>(Criteria $criteria = null
             }
 
             return $query
-                ->addUsingAlias(<?php echo $pk->getConstantName() ?>, $this-><?php echo $varListRelatedPKs ?>, Criteria::IN)
+                ->addUsingAlias(<?php echo $pk ?>, $this-><?php echo $varListRelatedPKs ?>, Criteria::IN)
                 ->count($con);
         }
     } else {
