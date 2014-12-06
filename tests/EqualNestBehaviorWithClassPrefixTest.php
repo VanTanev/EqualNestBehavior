@@ -2,8 +2,9 @@
 
 /**
  * @author William Durand <william.durand1@gmail.com>
+ * @author Ivan Tanev <van.tanev@gmail.com>
  */
-class EqualNestBehaviorWithTablePrefixTest extends TestCase
+class EqualNestBehaviorWithClassPrefixTest extends TestCase
 {
     protected function setUp()
     {
@@ -27,9 +28,6 @@ XML;
             $config = $builder->getConfig();
             $config->setBuildProperty('classPrefix', 'DB');
             $builder->setConfig($config);
-
-            //PropelQuickBuilder::debugClassesForTable($schema, 'student');
-            //PropelQuickBuilder::debugClassesForTable($schema, 'classmate');
 
             $builder->build();
         }
